@@ -377,17 +377,15 @@ const containerClasses = computed(() =>
 const layoutClasses = computed(() => {
   if (!showSplitView.value) return "w-full";
   const base = "grid h-full min-h-0 gap-4 lg:gap-6 lg:grid-rows-1";
-  const mobileRows = "grid-rows-1";
+  const mobileRows = "grid-rows-[1fr_auto]";
   const lgCols = showOpsPanel.value ? "lg:grid-cols-3" : "lg:grid-cols-2";
   return `${base} ${mobileRows} ${lgCols}`;
 });
 const chatCardClasses = computed(() => {
   if (!showSplitView.value) return "overflow-hidden";
-  const base = "flex flex-col overflow-hidden transition-[max-height] duration-300 ease-in-out";
-  const mobile = "fixed bottom-0 inset-x-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]";
-  const desktop = "lg:static lg:inset-auto lg:z-auto lg:shadow-none lg:h-full lg:min-h-0 lg:order-1";
+  const base = "order-2 flex flex-col overflow-hidden lg:order-1 lg:h-full lg:min-h-0";
   const height = chatExpanded.value ? "max-h-[70dvh] lg:max-h-none" : "lg:max-h-none";
-  return `${base} ${mobile} ${desktop} ${height}`;
+  return `${base} ${height}`;
 });
 const chatContentClasses = computed(() =>
   showSplitView.value
