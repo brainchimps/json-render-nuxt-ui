@@ -5,9 +5,20 @@
         <div :class="layoutClasses">
           <UCard :class="chatCardClasses" :ui="chatCardUi">
           <template #header>
-            <h1 data-testid="chat-title" class="text-lg font-semibold">
-              <code>json-render-nuxt-ui</code>
-            </h1>
+            <div class="flex items-center justify-between">
+              <h1 data-testid="chat-title" class="text-lg font-semibold">
+                <code>json-render-nuxt-ui</code>
+              </h1>
+              <UButton
+                v-if="showSplitView"
+                :icon="showOpsPanel ? 'i-lucide-code-xml' : 'i-lucide-code-xml'"
+                :color="showOpsPanel ? 'primary' : 'neutral'"
+                :variant="showOpsPanel ? 'soft' : 'ghost'"
+                size="xs"
+                aria-label="Toggle JSONL debug"
+                @click="toggleOpsPanel"
+              />
+            </div>
           </template>
           <div :class="chatContentClasses">
           <UChatMessages
@@ -141,28 +152,81 @@
           </div>
           </UCard>
 
+          <!-- Desktop-only: JSONL debug pane (middle column) -->
+          <UCard
+            v-if="showSplitView && showOpsPanel"
+            data-testid="debug-panel"
+            class="order-1 min-h-0 flex-col overflow-hidden lg:order-2 hidden lg:flex"
+            :ui="{ body: 'flex-1 min-h-0 flex flex-col' }"
+          >
+            <template #header>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">JSONL Stream</span>
+                <UBadge v-if="rawLines.length" :label="`${rawLines.length} ops`" size="xs" variant="subtle" />
+              </div>
+            </template>
+            <JsonlViewer :lines="rawLines" />
+          </UCard>
+
+          <!-- Render / debug panel -->
           <UCard
             v-if="showSplitView"
             data-testid="render-panel"
-            class="order-1 flex min-h-0 flex-col overflow-auto lg:order-2"
-            :ui="{ body: 'flex-1 flex flex-col' }"
+            class="order-1 flex min-h-0 flex-col overflow-hidden"
+            :class="showOpsPanel ? 'lg:order-3' : 'lg:order-2'"
+            :ui="{ body: 'flex-1 flex flex-col min-h-0 overflow-hidden' }"
           >
-            <pre v-if="showSplitView" data-testid="debug-spec" class="text-xs max-h-40 overflow-auto bg-gray-100 p-2 rounded mb-2">hasRenderedSpec={{ hasRenderedSpec }}, root={{ renderedSpec?.root }}, elements={{ Object.keys(renderedSpec?.elements || {}).join(', ') }}, registryKeys={{ Object.keys(registry).join(', ') }}</pre>
-            <JSONUIProvider :registry="registry" :initial-state="{}" class="flex flex-1 flex-col">
-              <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
-                <Renderer :spec="renderedSpec" :registry="registry" />
+            <template v-if="showOpsPanel" #header>
+              <div class="flex items-center gap-1 lg:hidden">
+                <UButton
+                  size="xs"
+                  :variant="activeRenderTab === 'ui' ? 'soft' : 'ghost'"
+                  :color="activeRenderTab === 'ui' ? 'primary' : 'neutral'"
+                  label="UI"
+                  @click="activeRenderTab = 'ui'"
+                />
+                <UButton
+                  size="xs"
+                  :variant="activeRenderTab === 'jsonl' ? 'soft' : 'ghost'"
+                  :color="activeRenderTab === 'jsonl' ? 'primary' : 'neutral'"
+                  label="JSONL"
+                  @click="activeRenderTab = 'jsonl'"
+                />
               </div>
-              <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
-                <template v-if="isGenerating">
-                  <UIcon name="i-lucide-loader" class="size-6 animate-spin" />
-                  <p class="text-sm">Generating UI&hellip;</p>
-                </template>
-                <template v-else>
-                  <UIcon name="i-lucide-sparkles" class="size-6" />
-                  <p class="text-sm text-center">Ask the AI to generate something<br>and it will appear here.</p>
-                </template>
-              </div>
-            </JSONUIProvider>
+            </template>
+
+            <!-- UI view (wrapped in div — JSONUIProvider renders a fragment so v-show can't hide it) -->
+            <div
+              class="flex-1 flex-col min-h-0"
+              :class="showOpsPanel && activeRenderTab === 'jsonl' ? 'hidden lg:flex!' : 'flex'"
+            >
+              <JSONUIProvider
+                :registry="registry"
+                :initial-state="{}"
+                class="flex flex-1 flex-col min-h-0"
+              >
+                <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
+                  <Renderer :spec="renderedSpec" :registry="registry" />
+                </div>
+                <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
+                  <template v-if="isGenerating">
+                    <UIcon name="i-lucide-loader" class="size-6 animate-spin" />
+                    <p class="text-sm">Generating UI&hellip;</p>
+                  </template>
+                  <template v-else>
+                    <UIcon name="i-lucide-sparkles" class="size-6" />
+                    <p class="text-sm text-center">Ask the AI to generate something<br>and it will appear here.</p>
+                  </template>
+                </div>
+              </JSONUIProvider>
+            </div>
+
+            <!-- Mobile-only: JSONL view (tab-swap inside render card) -->
+            <JsonlViewer
+              v-if="showOpsPanel && activeRenderTab === 'jsonl'"
+              :lines="rawLines"
+              class="lg:hidden"
+            />
           </UCard>
         </div>
       </div>
@@ -184,8 +248,17 @@ import {
   type ChatModelOption,
 } from "~/shared/models";
 
-const { registry, renderedSpec, hasRenderedSpec, isGenerating, uiError, send } =
+const { registry, renderedSpec, hasRenderedSpec, isGenerating, uiError, rawLines, send } =
   useJsonRender();
+
+const showOpsPanel = ref(false);
+type RenderTab = "ui" | "jsonl";
+const activeRenderTab = ref<RenderTab>("ui");
+
+function toggleOpsPanel() {
+  showOpsPanel.value = !showOpsPanel.value;
+  activeRenderTab.value = showOpsPanel.value ? "jsonl" : "ui";
+}
 
 const greeting = "What can I build for you today?";
 type DemoChatMessage = {
@@ -250,11 +323,13 @@ const containerClasses = computed(() =>
     ? "mx-auto h-full w-full"
     : "mx-auto h-full w-full max-w-3xl flex items-center"
 );
-const layoutClasses = computed(() =>
-  showSplitView.value
-    ? "grid h-full min-h-0 grid-rows-[minmax(0,2fr)_minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:gap-6 lg:grid-rows-1"
-    : "w-full"
-);
+const layoutClasses = computed(() => {
+  if (!showSplitView.value) return "w-full";
+  const base = "grid h-full min-h-0 gap-4 lg:gap-6 lg:grid-rows-1";
+  const mobileRows = "grid-rows-[minmax(0,2fr)_minmax(0,1fr)]";
+  const lgCols = showOpsPanel.value ? "lg:grid-cols-3" : "lg:grid-cols-2";
+  return `${base} ${mobileRows} ${lgCols}`;
+});
 const chatCardClasses = computed(() =>
   showSplitView.value
     ? "order-2 flex h-full min-h-0 flex-col overflow-hidden lg:order-1"

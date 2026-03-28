@@ -26,6 +26,7 @@ export function useJsonRender() {
 
   const isGenerating = computed(() => ui.isStreaming.value);
   const uiError = computed(() => ui.error.value ?? undefined);
+  const rawLines = computed(() => ui.rawLines.value);
   const renderedSpec = computed(() => ui.spec.value);
   const hasRenderedSpec = computed(() => isNonEmptySpec(renderedSpec.value));
 
@@ -35,6 +36,7 @@ export function useJsonRender() {
     hasRenderedSpec,
     isGenerating,
     uiError,
+    rawLines,
     send: ui.send,
   };
 }
