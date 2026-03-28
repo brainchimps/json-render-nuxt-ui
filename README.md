@@ -1,11 +1,13 @@
-# json-render-nuxt-ui workspace
+# json-render-nuxt-ui
 
-Monorepo managed with `pnpm` workspaces.
+Pre-built [Nuxt UI](https://ui.nuxt.com/) components for [json-render](https://json-render.dev/). Define a catalog, point an LLM at it, and render the streamed JSON spec as a live Nuxt UI interface.
+
+This monorepo contains the publishable package and a demo app that puts it all together with AI-powered UI generation.
 
 ## Packages
 
-- `packages/json-render-nuxt-ui`: publishable npm package named `json-render-nuxt-ui`
-- `apps/demo`: Nuxt 4 app that depends on the workspace package (`@nuxt/ui`, Vitest)
+- [`packages/json-render-nuxt-ui`](packages/json-render-nuxt-ui) — drop-in catalog definitions and Vue render functions for Card, Header, Button, and Input
+- [`apps/demo`](apps/demo) — Nuxt 4 chat app that streams AI-generated UI specs and renders them in real time
 
 ## Getting started
 
@@ -25,11 +27,9 @@ pnpm demo:test    # Vitest in apps/demo (builds the library first)
 
 From `apps/demo`, `pnpm dev`, `pnpm build`, and `pnpm test` each run `pnpm --filter json-render-nuxt-ui build` first so the linked workspace package is built before Nuxt or Vitest runs.
 
-## First exported API
+## json-render integration
 
-The package currently exports:
-
-- `helloWord(): string` -> returns `"Hello json-render!"`
+See the [demo integration guide](apps/demo/README.md#json-render-integration) for a walkthrough of the key files (catalog, registry, composable, server endpoint).
 
 ## License
 

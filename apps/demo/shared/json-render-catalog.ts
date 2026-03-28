@@ -1,41 +1,40 @@
+/**
+ * json-render catalog for the demo app.
+ *
+ * A catalog describes the components an LLM can use when generating a JSON
+ * spec. Each entry defines Zod-validated props and a plain-english description
+ * that gets included in the system prompt via `catalog.prompt()`.
+ *
+ * This catalog spreads the standard Nuxt UI definitions from the
+ * `json-render-nuxt-ui` package and adds a custom `FancyHeader` to show
+ * how consumers extend the built-in set.
+ *
+ * The matching render functions live in `./json-render-registry.ts`.
+ */
 import { defineCatalog } from "@json-render/core";
 import { schema } from "@json-render/vue/schema";
+import { nuxtUiComponentDefinitions } from "json-render-nuxt-ui/catalog";
 import { z } from "zod";
 
 export const catalog = defineCatalog(schema, {
   components: {
-    Panel: {
+    // Spread all built-in Nuxt UI components (Card, Header, Button, Input).
+    // To cherry-pick, replace the spread with individual entries:
+    //   Card: nuxtUiComponentDefinitions.Card,
+    //   Button: nuxtUiComponentDefinitions.Button,
+    ...nuxtUiComponentDefinitions,
+
+    // Custom component
+    FancyHeader: {
       props: z.object({
-        title: z.string(),
-        description: z.string().nullable().optional(),
+        text: z.string(),
+        gradient: z
+          .enum(["sunset", "ocean", "forest"])
+          .optional(),
       }),
-      slots: ["default"],
       description:
-        "Container with a title and optional description. Use as a top-level layout block.",
-    },
-    Text: {
-      props: z.object({
-        content: z.string(),
-        tone: z.enum(["default", "muted"]).optional(),
-      }),
-      description: "Text paragraph or short sentence.",
-    },
-    Stat: {
-      props: z.object({
-        label: z.string(),
-        value: z.string(),
-      }),
-      description: "Key/value statistic display.",
-    },
-    Tag: {
-      props: z.object({
-        label: z.string(),
-      }),
-      description: "Small badge-like label.",
+        "Decorative header with colorful gradient text. Use for eye-catching section titles or hero headings.",
     },
   },
   actions: {},
 });
-
-export const JSON_RENDER_TEST_PROMPT =
-  'Return ONLY valid JSON (no markdown fences). Build a compact "Weekend plan" UI using components Panel, Text, Stat, and Tag. Include one Panel with a title, 2 Text items, 2 Stat rows, and 2 Tag items.';

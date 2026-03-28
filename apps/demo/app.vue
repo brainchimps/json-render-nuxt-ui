@@ -147,9 +147,9 @@
             class="order-1 flex min-h-0 flex-col overflow-auto lg:order-2"
             :ui="{ body: 'flex-1 flex flex-col' }"
           >
-            <JSONUIProvider :registry="jsonRenderRegistry" :initial-state="{}" class="flex flex-1 flex-col">
+            <JSONUIProvider :registry="registry" :initial-state="{}" class="flex flex-1 flex-col">
               <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
-                <Renderer :spec="renderedSpec" :registry="jsonRenderRegistry" />
+                <Renderer :spec="renderedSpec" :registry="registry" />
               </div>
               <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
                 <template v-if="isGenerating">
@@ -170,17 +170,17 @@
 </template>
 
 <script setup lang="ts">
-import { isNonEmptySpec } from "@json-render/core";
-import { JSONUIProvider, Renderer, useUIStream } from "@json-render/vue";
+import { JSONUIProvider, Renderer } from "@json-render/vue";
 import { isTextUIPart } from "ai";
 import {
   ALLOWED_CHAT_MODELS,
   OPENAI_ICON,
   type ChatModelOption,
 } from "~/shared/models";
-import {
-  registry as jsonRenderRegistry,
-} from "~/shared/json-render";
+
+const { registry, renderedSpec, hasRenderedSpec, isGenerating, uiError, send } =
+  useJsonRender();
+
 const greeting = "What can I build for you today?";
 type DemoChatMessage = {
   id: string;
@@ -203,7 +203,6 @@ const starterPrompts = [
   },
 ];
 const input = ref("");
-const toast = useToast();
 const runtimeConfig = useRuntimeConfig();
 const lockedModel = runtimeConfig.public.enforcedAiModel?.trim();
 const isModelLocked = computed(() => Boolean(lockedModel));
@@ -225,27 +224,6 @@ const selectedModelIcon = computed(() => {
   );
 });
 
-function getGenerationErrorDescription(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
-  if (message.includes("AI_GATEWAY_API_KEY")) {
-    return "Add AI_GATEWAY_API_KEY to apps/demo/.env";
-  }
-
-  return "UI generation failed. Please try again.";
-}
-
-const ui = useUIStream({
-  api: "/api/generate",
-  onError(error) {
-    toast.add({
-      title: "Generation unavailable",
-      description: getGenerationErrorDescription(error),
-      color: "error",
-    });
-  },
-});
-const isGenerating = computed(() => ui.isStreaming.value);
-const uiError = computed(() => ui.error.value ?? undefined);
 const chatStatus = computed(() => (isGenerating.value ? "submitted" : "ready"));
 const greetingMessages = computed<DemoChatMessage[]>(() => [
   {
@@ -257,8 +235,6 @@ const greetingMessages = computed<DemoChatMessage[]>(() => [
 
 const chatMessages = ref<DemoChatMessage[]>([]);
 const hasMessages = computed(() => chatMessages.value.length > 0);
-const renderedSpec = computed(() => ui.spec.value);
-const hasRenderedSpec = computed(() => isNonEmptySpec(renderedSpec.value));
 const showSplitView = computed(() => hasMessages.value);
 const lastSubmittedPrompt = ref<string | null>(null);
 const containerClasses = computed(() =>
@@ -309,7 +285,7 @@ async function submitPrompt(text: string) {
     parts: [{ type: "text", text }],
   });
 
-  await ui.send(text, {
+  await send(text, {
     model: selectedModel.value,
     currentSpec: renderedSpec.value ?? undefined,
   });

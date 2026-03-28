@@ -1,14 +1,6 @@
-# demo
+# json-render-nuxt-ui demo
 
 Nuxt 4 app that consumes the local [`json-render-nuxt-ui`](../../packages/json-render-nuxt-ui) workspace package.
-
-## Demo UX notes
-
-- The chat remains centered and compact until a valid `json-render` spec is detected in the latest assistant message.
-- When a spec is present:
-  - Desktop switches to split layout (`chat` left, `rendered UI` right).
-  - Mobile uses stacked layout (`rendered UI` top, `chat` bottom).
-- Use the "Weekend plan sample" test prompt chip under the greeting to quickly seed a compatible prompt.
 
 ## Environment
 
@@ -25,15 +17,11 @@ cp apps/demo/.env.example apps/demo/.env
   - It must match one of the allowlisted models in [`apps/demo/shared/models.ts`](./shared/models.ts).
   - This is useful for public deployments where you want to lock users to one approved model.
 
-## From repository root
+## Development
 
-| Command | What it runs |
-|--------|----------------|
-| `pnpm demo` | `pnpm --filter demo dev` — Nuxt dev server |
-| `pnpm demo:build` | `pnpm --filter demo build` — Nuxt production build |
-| `pnpm demo:test` | `pnpm --filter demo test` — Vitest |
+See the [root README](../../README.md#getting-started) for repo-level commands.
 
-## From this directory ([`apps/demo`](./))
+From this directory:
 
 ```bash
 pnpm dev    # builds json-render-nuxt-ui, then nuxt dev
@@ -41,4 +29,16 @@ pnpm build  # builds json-render-nuxt-ui, then nuxt build
 pnpm test   # builds json-render-nuxt-ui, then vitest run
 ```
 
-`postinstall` runs `nuxt prepare` for Nuxt module codegen.
+`postinstall` runs `nuxt prepare` for Nuxt module codegen, so type-checking and
+auto-imports work immediately after `pnpm install`.
+
+## json-render integration
+
+These are the key files for understanding how json-render works in this demo:
+
+| File | Purpose |
+|------|---------|
+| [`composables/useJsonRender.ts`](./composables/useJsonRender.ts) | Client composable — streams specs via `useUIStream`, exposes `registry`, `renderedSpec`, `isGenerating`, and `send()` |
+| [`shared/json-render-registry.ts`](./shared/json-render-registry.ts) | Component registry — maps the package's Nuxt UI components + a custom `FancyHeader` to render functions |
+| [`shared/json-render-catalog.ts`](./shared/json-render-catalog.ts) | Catalog schema — defines available components so the AI knows what to generate |
+| [`server/api/generate.post.ts`](./server/api/generate.post.ts) | Server endpoint — builds the LLM prompt from the catalog and streams the response |
