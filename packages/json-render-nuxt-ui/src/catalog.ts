@@ -12,6 +12,41 @@ export type ComponentDefinition = {
 };
 
 export const nuxtUiComponentDefinitions = {
+  Stack: {
+    props: z.object({
+      gap: z.enum(["none", "xs", "sm", "md", "lg", "xl"]).optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Vertical flex container that spaces children evenly. Use as the top-level wrapper or to group elements with consistent vertical rhythm.",
+  },
+  Row: {
+    props: z.object({
+      gap: z.enum(["none", "xs", "sm", "md", "lg", "xl"]).optional(),
+      align: z.enum(["start", "center", "end", "stretch"]).optional(),
+      justify: z.enum(["start", "center", "end", "between", "around"]).optional(),
+      wrap: z.boolean().optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Horizontal flex container for side-by-side layouts (e.g. input + button, icon row, grid cells).",
+  },
+  Divider: {
+    props: z.object({
+      label: z.string().optional(),
+    }),
+    description:
+      "Horizontal rule / visual separator between sections. Optional centered label.",
+  },
+  Text: {
+    props: z.object({
+      content: z.string(),
+      size: z.enum(["xs", "sm", "md", "lg"]).optional(),
+      color: z.enum(["default", "muted", "dimmed"]).optional(),
+    }),
+    description:
+      "Plain text paragraph. Use for descriptions, instructions, or any body copy that is not a heading.",
+  },
   Card: {
     props: z.object({
       title: z.string().optional(),
@@ -19,7 +54,7 @@ export const nuxtUiComponentDefinitions = {
     }),
     slots: ["default"],
     description:
-      "Container card with optional title and description. Renders children in the card body.",
+      "Container card with optional title and description. Renders children in the card body with vertical spacing.",
   },
   Header: {
     props: z.object({

@@ -8,7 +8,78 @@ type ComponentMap = {
   ) => ReturnType<typeof h>;
 };
 
+const gapClass: Record<string, string> = {
+  none: "gap-0",
+  xs: "gap-1",
+  sm: "gap-2",
+  md: "gap-4",
+  lg: "gap-6",
+  xl: "gap-8",
+};
+
 export const nuxtUiComponents: ComponentMap = {
+  Stack: ({ props, children }) => {
+    const gap = gapClass[props.gap ?? "md"];
+    return h("div", { class: `flex flex-col ${gap}` }, children);
+  },
+
+  Row: ({ props, children }) => {
+    const gap = gapClass[props.gap ?? "md"];
+    const alignMap: Record<string, string> = {
+      start: "items-start",
+      center: "items-center",
+      end: "items-end",
+      stretch: "items-stretch",
+    };
+    const justifyMap: Record<string, string> = {
+      start: "justify-start",
+      center: "justify-center",
+      end: "justify-end",
+      between: "justify-between",
+      around: "justify-around",
+    };
+    const classes = [
+      "flex flex-row",
+      gap,
+      alignMap[props.align ?? "center"],
+      justifyMap[props.justify ?? "start"],
+      props.wrap ? "flex-wrap" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return h("div", { class: classes }, children);
+  },
+
+  Divider: ({ props }) => {
+    if (props.label) {
+      return h("div", { class: "flex items-center gap-3 my-2" }, [
+        h("hr", { class: "flex-1 border-default" }),
+        h("span", { class: "text-xs text-dimmed shrink-0" }, props.label),
+        h("hr", { class: "flex-1 border-default" }),
+      ]);
+    }
+    return h("hr", { class: "border-default my-2" });
+  },
+
+  Text: ({ props }) => {
+    const sizeClass: Record<string, string> = {
+      xs: "text-xs",
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg",
+    };
+    const colorClass: Record<string, string> = {
+      default: "text-default",
+      muted: "text-muted",
+      dimmed: "text-dimmed",
+    };
+    const classes = [
+      sizeClass[props.size ?? "sm"],
+      colorClass[props.color ?? "default"],
+    ].join(" ");
+    return h("p", { class: classes }, props.content);
+  },
+
   Card: ({ props, children }) => {
     const UCard = resolveComponent("UCard");
     const hasHeader = Boolean(props.title || props.description);
@@ -25,7 +96,7 @@ export const nuxtUiComponents: ComponentMap = {
                 : null,
             ])
         : undefined,
-      default: () => children,
+      default: () => h("div", { class: "space-y-4" }, children),
     });
   },
 

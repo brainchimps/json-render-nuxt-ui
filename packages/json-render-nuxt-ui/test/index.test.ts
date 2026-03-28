@@ -3,6 +3,10 @@ import { nuxtUiComponentDefinitions } from "../src/catalog";
 import { nuxtUiComponents } from "../src/index";
 
 const componentNames = [
+  "Stack",
+  "Row",
+  "Divider",
+  "Text",
   "Card",
   "Header",
   "Button",
@@ -46,9 +50,13 @@ describe("json-render-nuxt-ui component registry", () => {
 
 describe("json-render-nuxt-ui component metadata", () => {
   it("defines expected slots", () => {
+    expect(getSlots("Stack")).toEqual(["default"]);
+    expect(getSlots("Row")).toEqual(["default"]);
     expect(getSlots("Card")).toEqual(["default"]);
     expect(getSlots("Dialog")).toEqual(["default"]);
 
+    expect(getSlots("Divider")).toBeUndefined();
+    expect(getSlots("Text")).toBeUndefined();
     expect(getSlots("Header")).toBeUndefined();
     expect(getSlots("Button")).toBeUndefined();
     expect(getSlots("Input")).toBeUndefined();
@@ -59,6 +67,10 @@ describe("json-render-nuxt-ui component metadata", () => {
   });
 
   it("defines expected events", () => {
+    expect(getEvents("Stack")).toBeUndefined();
+    expect(getEvents("Row")).toBeUndefined();
+    expect(getEvents("Divider")).toBeUndefined();
+    expect(getEvents("Text")).toBeUndefined();
     expect(getEvents("Card")).toBeUndefined();
     expect(getEvents("Header")).toBeUndefined();
     expect(getEvents("Button")).toEqual(["press"]);
@@ -78,6 +90,10 @@ describe("json-render-nuxt-ui component metadata", () => {
 describe("json-render-nuxt-ui schema validation", () => {
   it("accepts valid props for every component", () => {
     const validProps: Record<(typeof componentNames)[number], unknown> = {
+      Stack: { gap: "md" },
+      Row: { gap: "sm", align: "center", justify: "between", wrap: true },
+      Divider: { label: "or" },
+      Text: { content: "Hello world", size: "sm", color: "muted" },
       Card: { title: "Title", description: "Description" },
       Header: { text: "Heading", level: "h2", description: null },
       Button: {
@@ -111,6 +127,10 @@ describe("json-render-nuxt-ui schema validation", () => {
 
   it("rejects invalid props for every component", () => {
     const invalidProps: Record<(typeof componentNames)[number], unknown> = {
+      Stack: { gap: "huge" },
+      Row: { align: "middle" },
+      Divider: { label: 42 },
+      Text: { content: 123 },
       Card: { title: 123 },
       Header: { level: "h7" },
       Button: { label: "Save", variant: "filled" },

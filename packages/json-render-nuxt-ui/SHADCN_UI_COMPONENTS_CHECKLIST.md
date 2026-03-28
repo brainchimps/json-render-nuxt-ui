@@ -33,7 +33,7 @@ Current implementation files:
 - [ ] [`progress`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/progress.tsx)
 - [ ] [`radio-group`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/radio-group.tsx)
 - [x] [`select`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/select.tsx) (implemented as `Select`)
-- [ ] [`separator`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/separator.tsx)
+- [x] [`separator`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/separator.tsx) (implemented as `Divider`)
 - [ ] [`skeleton`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/skeleton.tsx)
 - [ ] [`slider`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/slider.tsx)
 - [x] [`switch`](https://github.com/vercel-labs/json-render/blob/main/packages/shadcn/src/ui/switch.tsx) (implemented as `Switch`)
@@ -46,5 +46,5 @@ Current implementation files:
 
 ## Notes
 
-- Your package currently includes one extra non-shadcn component: `Header`.
+- This package also includes layout and utility components not in the shadcn package: `Stack`, `Row`, `Divider`, `Text`, and `Header`.
 - Implemented status is based on both catalog definition and runtime component renderer being present.

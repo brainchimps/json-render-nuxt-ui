@@ -68,7 +68,71 @@ describe("component renderers", () => {
     useBoundPropMock.mockClear();
   });
 
-  it("Card renders UCard with default slot content", () => {
+  it("Stack renders a vertical flex container with gap", () => {
+    const { ctx } = createBaseContext({ gap: "lg" });
+    const vnode = asVNode(nuxtUiComponents.Stack(ctx));
+
+    expect(vnode.type).toBe("div");
+    expect(vnode.props.class).toContain("flex flex-col");
+    expect(vnode.props.class).toContain("gap-6");
+    expect(vnode.children).toEqual(["child-node"]);
+  });
+
+  it("Stack defaults to md gap", () => {
+    const { ctx } = createBaseContext({});
+    const vnode = asVNode(nuxtUiComponents.Stack(ctx));
+
+    expect(vnode.props.class).toContain("gap-4");
+  });
+
+  it("Row renders a horizontal flex container", () => {
+    const { ctx } = createBaseContext({
+      gap: "sm",
+      align: "end",
+      justify: "between",
+      wrap: true,
+    });
+    const vnode = asVNode(nuxtUiComponents.Row(ctx));
+
+    expect(vnode.type).toBe("div");
+    expect(vnode.props.class).toContain("flex flex-row");
+    expect(vnode.props.class).toContain("gap-2");
+    expect(vnode.props.class).toContain("items-end");
+    expect(vnode.props.class).toContain("justify-between");
+    expect(vnode.props.class).toContain("flex-wrap");
+    expect(vnode.children).toEqual(["child-node"]);
+  });
+
+  it("Divider renders a plain hr by default", () => {
+    const { ctx } = createBaseContext({});
+    const vnode = asVNode(nuxtUiComponents.Divider(ctx));
+
+    expect(vnode.type).toBe("hr");
+  });
+
+  it("Divider renders a labeled separator when label is provided", () => {
+    const { ctx } = createBaseContext({ label: "or" });
+    const vnode = asVNode(nuxtUiComponents.Divider(ctx));
+
+    expect(vnode.type).toBe("div");
+    expect(Array.isArray(vnode.children)).toBe(true);
+  });
+
+  it("Text renders a paragraph with content", () => {
+    const { ctx } = createBaseContext({
+      content: "Hello world",
+      size: "lg",
+      color: "muted",
+    });
+    const vnode = asVNode(nuxtUiComponents.Text(ctx));
+
+    expect(vnode.type).toBe("p");
+    expect(vnode.props.class).toContain("text-lg");
+    expect(vnode.props.class).toContain("text-muted");
+    expect(vnode.children).toBe("Hello world");
+  });
+
+  it("Card renders UCard with default slot wrapped in space-y-4", () => {
     const { ctx } = createBaseContext({
       title: "Title",
       description: "Description",
@@ -79,9 +143,12 @@ describe("component renderers", () => {
     expect(typeof (vnode.children as Record<string, () => unknown>).default).toBe(
       "function"
     );
-    expect(
+    const defaultSlot = asVNode(
       (vnode.children as Record<string, () => unknown>).default()
-    ).toEqual(["child-node"]);
+    );
+    expect(defaultSlot.type).toBe("div");
+    expect(defaultSlot.props.class).toContain("space-y-4");
+    expect(defaultSlot.children).toEqual(["child-node"]);
     expect(typeof (vnode.children as Record<string, () => unknown>).header).toBe(
       "function"
     );
