@@ -22,9 +22,9 @@ See the [root README](../../README.md#getting-started) for repo-level commands.
 From this directory:
 
 ```bash
-pnpm dev    # builds json-render-nuxt-ui, then nuxt dev
+pnpm dev    # nuxt dev (source-aliased, no pre-build needed)
 pnpm build  # builds json-render-nuxt-ui, then nuxt build
-pnpm test   # builds json-render-nuxt-ui, then vitest run
+pnpm test   # nuxt prepare, then vitest run
 ```
 
 `postinstall` runs `nuxt prepare` for Nuxt module codegen, so type-checking and
@@ -36,7 +36,8 @@ These are the key files for understanding how json-render works in this demo:
 
 | File | Purpose |
 |------|---------|
-| [`composables/useJsonRender.ts`](./composables/useJsonRender.ts) | Client composable — streams specs via `useUIStream`, exposes `registry`, `renderedSpec`, `isGenerating`, and `send()` |
-| [`shared/json-render-registry.ts`](./shared/json-render-registry.ts) | Component registry — maps the package's Nuxt UI components + a custom `FancyHeader` to render functions |
+| [`plugins/register-json-render-nuxt-ui.ts`](./plugins/register-json-render-nuxt-ui.ts) | **Nuxt plugin** — globally registers the Nuxt UI components that json-render needs at runtime (see [why this is required](../../packages/json-render-nuxt-ui/README.md#nuxt-plugin-required)) |
 | [`shared/json-render-catalog.ts`](./shared/json-render-catalog.ts) | Catalog schema — defines available components so the AI knows what to generate |
+| [`shared/json-render-registry.ts`](./shared/json-render-registry.ts) | Component registry — maps the package's Nuxt UI components + a custom `FancyHeader` to render functions |
+| [`composables/useJsonRender.ts`](./composables/useJsonRender.ts) | Client composable — streams specs via `useUIStream`, exposes `registry`, `renderedSpec`, `isGenerating`, and `send()` |
 | [`server/api/generate.post.ts`](./server/api/generate.post.ts) | Server endpoint — builds the LLM prompt from the catalog and streams the response |

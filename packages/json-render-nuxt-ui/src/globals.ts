@@ -1,4 +1,5 @@
 import type { Component } from "vue";
+import type { ComponentDefinition, NuxtUiComponentName } from "./catalog";
 
 /**
  * Maps json-render catalog component names to the Nuxt UI global component
@@ -6,7 +7,9 @@ import type { Component } from "vue";
  *
  * Components that only use native HTML elements (e.g. Header) have no entry.
  */
-export const nuxtUiGlobalDeps: Readonly<Record<string, readonly string[]>> = {
+export const nuxtUiGlobalDeps: Readonly<
+  Partial<Record<NuxtUiComponentName, readonly string[]>>
+> = {
   Card: ["UCard"],
   Button: ["UButton"],
   Input: ["UInput"],
@@ -21,38 +24,6 @@ type NuxtAppLike = {
   vueApp: { component(name: string, comp: Component): void };
 };
 
-function collectNeeded(
-  catalogComponents?: string[] | Record<string, unknown>,
-): Set<string> {
-  const filterKeys = catalogComponents
-    ? Array.isArray(catalogComponents)
-      ? catalogComponents
-      : Object.keys(catalogComponents)
-    : Object.keys(nuxtUiGlobalDeps);
-
-  const needed = new Set<string>();
-  for (const key of filterKeys) {
-    const deps = nuxtUiGlobalDeps[key];
-    if (deps) {
-      for (const dep of deps) needed.add(dep);
-    }
-  }
-  return needed;
-}
-
-function applyGlobals(
-  nuxtApp: NuxtAppLike,
-  resolved: Record<string, unknown>,
-  catalogComponents?: string[] | Record<string, unknown>,
-): void {
-  for (const name of collectNeeded(catalogComponents)) {
-    const comp = resolved[name];
-    if (comp) {
-      nuxtApp.vueApp.component(name, comp as Component);
-    }
-  }
-}
-
 /**
  * Globally register the Nuxt UI components that json-render-nuxt-ui
  * needs at runtime.
@@ -63,23 +34,22 @@ function applyGlobals(
  * components it references must be registered on the Vue app instance.
  *
  * @param nuxtApp  The Nuxt app instance (from `defineNuxtPlugin` callback).
- * @param resolved Either a resolver function that returns the Nuxt component
- *   module (typically `() => import("#components")`), or a pre-built record
- *   mapping Nuxt UI names (e.g. `UCard`) to their implementations.
- * @param catalogComponents Optional filter. When provided, only the Nuxt UI
- *   globals required by these catalog component names are registered. Pass an
- *   array of names (`['Card', 'Button']`) or an object whose keys are names
- *   (e.g. `nuxtUiComponentDefinitions`). When omitted every known dependency
- *   is registered.
+ * @param resolved Object mapping Nuxt UI component names (e.g. `UCard`) to
+ *   their Vue component implementations — import these from `#components`.
+ * @param catalogComponents The catalog component names to register globals for.
+ *   Only the Nuxt UI globals required by these components are registered. Pass
+ *   an array of names (`['Card', 'Button']`) or an object whose keys are names
+ *   (e.g. `nuxtUiComponentDefinitions` or a custom subset).
  *
  * @example
  * ```ts
  * import { registerNuxtUiGlobals, nuxtUiComponentDefinitions } from "json-render-nuxt-ui";
+ * import { UCard, UButton, UInput, USelect, UCheckbox, UTextarea, USwitch, UModal } from "#components";
  *
- * export default defineNuxtPlugin(async (nuxtApp) => {
- *   await registerNuxtUiGlobals(
+ * export default defineNuxtPlugin((nuxtApp) => {
+ *   registerNuxtUiGlobals(
  *     nuxtApp,
- *     () => import("#components"),
+ *     { UCard, UButton, UInput, USelect, UCheckbox, UTextarea, USwitch, UModal },
  *     nuxtUiComponentDefinitions,
  *   );
  * });
@@ -87,13 +57,33 @@ function applyGlobals(
  */
 export function registerNuxtUiGlobals(
   nuxtApp: NuxtAppLike,
-  resolved: Record<string, unknown> | (() => Promise<Record<string, unknown>>),
-  catalogComponents?: string[] | Record<string, unknown>,
-): void | Promise<void> {
-  if (typeof resolved === "function") {
-    return resolved().then((mod) =>
-      applyGlobals(nuxtApp, mod, catalogComponents),
-    );
+  resolved: Record<string, Component>,
+  catalogComponents:
+    | NuxtUiComponentName[]
+    | Partial<Record<NuxtUiComponentName, ComponentDefinition>>,
+): void {
+  const filterKeys: NuxtUiComponentName[] = Array.isArray(catalogComponents)
+    ? catalogComponents
+    : (Object.keys(catalogComponents) as NuxtUiComponentName[]);
+
+  const needed = new Map<string, NuxtUiComponentName>();
+  for (const key of filterKeys) {
+    const deps = nuxtUiGlobalDeps[key];
+    if (deps) {
+      for (const dep of deps) needed.set(dep, key);
+    }
   }
-  applyGlobals(nuxtApp, resolved, catalogComponents);
+
+  for (const [name, catalogName] of needed) {
+    const comp = resolved[name];
+    if (comp) {
+      nuxtApp.vueApp.component(name, comp);
+    } else {
+      console.warn(
+        `[json-render-nuxt-ui] Missing "${name}" — required by the "${catalogName}" component. ` +
+          `Import it (import { ${name} } from "#components") and pass it ` +
+          `to your registerNuxtUiGlobals() call.`,
+      );
+    }
+  }
 }

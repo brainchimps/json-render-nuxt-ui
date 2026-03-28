@@ -9,4 +9,4 @@ export {
 } from "./catalog";
 
 // Nuxt global registration helper
-export { registerNuxtUiGlobals, nuxtUiGlobalDeps } from "./globals";
+export { registerNuxtUiGlobals } from "./globals";

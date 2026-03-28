@@ -12,6 +12,43 @@ This package aims for compatibility with the official json-render shadcn package
 npm install json-render-nuxt-ui @json-render/core @json-render/vue @nuxt/ui zod
 ```
 
+## Nuxt Plugin (required)
+
+> **Unlike @json-render/shadcn**, Nuxt UI components are auto-imported via compile-time template transforms — they are **not** registered globally at runtime. This package deliberately uses Vue's `resolveComponent()` instead of importing `@nuxt/ui` internals directly, so consumers keep full control over tree-shaking and bundled component set. The trade-off is that you must register the components yourself in a Nuxt plugin. `registerNuxtUiGlobals()` makes this easy.
+
+Create a plugin file (e.g. `plugins/register-json-render-nuxt-ui.ts`):
+
+```typescript
+import {
+  registerNuxtUiGlobals,
+  nuxtUiComponentDefinitions,
+} from "json-render-nuxt-ui";
+import {
+  UCard,
+  UButton,
+  UInput,
+  USelect,
+  UCheckbox,
+  UTextarea,
+  USwitch,
+  UModal,
+} from "#components";
+
+export default defineNuxtPlugin((nuxtApp) => {
+  registerNuxtUiGlobals(
+    nuxtApp,
+    { UCard, UButton, UInput, USelect, UCheckbox, UTextarea, USwitch, UModal },
+    nuxtUiComponentDefinitions,
+  );
+});
+```
+
+**How it works:**
+
+- The second argument is a record of Nuxt UI components imported from `#components` (Nuxt's virtual module). Only these are tree-shakeable — never use `import("#components")` dynamically.
+- The third argument determines which globals to register based on catalog component names. Pass `nuxtUiComponentDefinitions` to register all built-in components, or a subset like `{ Card: ..., Button: ... }` to register only what you use.
+- If you forget a component, you'll see a clear warning in the console telling you exactly which import to add.
+
 ## Quick Start
 
 ### 1. Create a Catalog
@@ -135,7 +172,7 @@ State actions (`setState`, `pushState`, `removeState`, `validateForm`) are built
 
 | Entry Point | Exports |
 |-------------|---------|
-| `json-render-nuxt-ui` | `nuxtUiComponents` |
+| `json-render-nuxt-ui` | `nuxtUiComponents`, `nuxtUiComponentDefinitions`, `registerNuxtUiGlobals` |
 | `json-render-nuxt-ui/catalog` | `nuxtUiComponentDefinitions` |
 
-The `/catalog` entry point contains only Zod schemas and can be used in server-side prompt generation.
+The `/catalog` entry point contains only Zod schemas and can be used in server-side prompt generation. The main entry re-exports `nuxtUiComponentDefinitions` for convenience so you only need one import in your plugin.
