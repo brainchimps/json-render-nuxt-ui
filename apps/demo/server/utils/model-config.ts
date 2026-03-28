@@ -1,13 +1,11 @@
-import { ALLOWED_CHAT_MODELS, isAllowedChatModel } from "../../shared/models";
-
-const DEFAULT_ALLOWED_MODEL = ALLOWED_CHAT_MODELS[0]?.value;
+import { isAllowedChatModel } from "../../shared/models";
 
 export function getEnforcedModelOverride(): string | undefined {
   const model = process.env.ENFORCE_AI_MODEL?.trim();
   return model || undefined;
 }
 
-export function resolveGatewayModel(requestedModel?: string): string {
+export function resolveGatewayModel(requestedModel: string): string {
   const envOverride = getEnforcedModelOverride();
   if (envOverride) {
     if (!isAllowedChatModel(envOverride)) {
@@ -18,14 +16,7 @@ export function resolveGatewayModel(requestedModel?: string): string {
     return envOverride;
   }
 
-  const requested = requestedModel?.trim();
-  if (!requested) {
-    if (!DEFAULT_ALLOWED_MODEL) {
-      throw new Error("No allowed chat models configured.");
-    }
-    return DEFAULT_ALLOWED_MODEL;
-  }
-
+  const requested = requestedModel.trim();
   if (!isAllowedChatModel(requested)) {
     throw new Error(
       `Invalid model "${requested}". Please choose a supported model from the selector.`

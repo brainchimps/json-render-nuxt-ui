@@ -1,19 +1,30 @@
+import { resolve } from "node:path";
+
 const vitest = Boolean(process.env.VITEST);
+
+const pkgSrc = resolve(__dirname, "../../packages/json-render-nuxt-ui/src");
 
 export default defineNuxtConfig({
   compatibilityDate: "2026-03-28",
   modules: ["@nuxt/ui"],
   css: ["~/assets/css/main.css"],
+
+  alias: {
+    "json-render-nuxt-ui/catalog": resolve(pkgSrc, "catalog.ts"),
+    "json-render-nuxt-ui": resolve(pkgSrc, "index.ts"),
+  },
+
   vite: {
     optimizeDeps: {
       include: [
         "ai",
         "@ai-sdk/vue",
         "@json-render/vue",
-        "zod", 
+        "zod",
         "@json-render/core",
-        "@json-render/vue/schema"
+        "@json-render/vue/schema",
       ],
+      exclude: ["json-render-nuxt-ui"],
     },
   },
   runtimeConfig: {

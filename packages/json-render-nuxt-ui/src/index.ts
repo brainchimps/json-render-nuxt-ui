@@ -7,3 +7,6 @@ export {
   type ComponentDefinition,
   type NuxtUiProps,
 } from "./catalog";
+
+// Nuxt global registration helper
+export { registerNuxtUiGlobals, nuxtUiGlobalDeps } from "./globals";

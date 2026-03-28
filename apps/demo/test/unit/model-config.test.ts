@@ -3,7 +3,6 @@ import {
   getEnforcedModelOverride,
   resolveGatewayModel,
 } from "../../server/utils/model-config";
-import { ALLOWED_CHAT_MODELS } from "../../shared/models";
 
 describe("gateway model config", () => {
   const original = process.env.ENFORCE_AI_MODEL;
@@ -20,9 +19,10 @@ describe("gateway model config", () => {
     );
   });
 
-  it("uses first allowlisted model when no model is provided", () => {
+  it("rejects an empty model string", () => {
     delete process.env.ENFORCE_AI_MODEL;
-    expect(resolveGatewayModel()).toBe(ALLOWED_CHAT_MODELS[0]?.value);
+    expect(() => resolveGatewayModel("")).toThrow(/Invalid model/);
+    expect(() => resolveGatewayModel("  ")).toThrow(/Invalid model/);
   });
 
   it("accepts a valid selected model", () => {

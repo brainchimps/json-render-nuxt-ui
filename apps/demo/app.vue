@@ -246,10 +246,9 @@
               <JSONUIProvider
                 :registry="registry"
                 :initial-state="{}"
-                class="flex flex-1 flex-col min-h-0"
               >
                 <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
-                  <Renderer :spec="renderedSpec" :registry="registry" />
+                  <Renderer :spec="renderedSpec" :registry="registry" :loading="isGenerating" />
                 </div>
                 <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
                   <template v-if="isGenerating">

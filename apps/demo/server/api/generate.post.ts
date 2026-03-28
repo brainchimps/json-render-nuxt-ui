@@ -7,7 +7,7 @@ import { getGatewayApiKey, resolveGatewayModel } from "../utils/model-config";
 
 type GenerateBody = {
   prompt?: string;
-  model?: string;
+  context?: { model: string; [key: string]: unknown };
   currentSpec?: unknown;
 };
 
@@ -22,10 +22,18 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const requestedModel = body.context?.model?.trim();
+  if (!requestedModel) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Model is required.",
+    });
+  }
+
   try {
     process.env.AI_GATEWAY_API_KEY = getGatewayApiKey();
     
-    const model = resolveGatewayModel(body.model);
+    const model = resolveGatewayModel(requestedModel);
 
     const system = catalog.prompt();
     const userPrompt = buildUserPrompt({

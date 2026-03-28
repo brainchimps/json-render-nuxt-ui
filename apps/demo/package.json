@@ -4,9 +4,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter json-render-nuxt-ui build && nuxt dev",
+    "dev": "nuxt dev",
     "build": "pnpm --filter json-render-nuxt-ui build && nuxt build",
-    "test": "pnpm --filter json-render-nuxt-ui build && nuxt prepare && vitest run",
+    "test": "nuxt prepare && vitest run",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
