@@ -1,13 +1,21 @@
 # demo
 
-Minimal consumer package for testing the local workspace package.
+Nuxt 4 app that consumes the local `json-render-nuxt-ui` workspace package.
 
-## Run
+## From repository root
 
-From repository root:
+| Command | What it runs |
+|--------|----------------|
+| `pnpm demo` | `pnpm --filter demo dev` — Nuxt dev server |
+| `pnpm demo:build` | `pnpm --filter demo build` — Nuxt production build |
+| `pnpm demo:test` | `pnpm --filter demo test` — Vitest |
+
+## From this directory (`apps/demo`)
 
 ```bash
-pnpm demo
+pnpm dev    # builds json-render-nuxt-ui, then nuxt dev
+pnpm build  # builds json-render-nuxt-ui, then nuxt build
+pnpm test   # builds json-render-nuxt-ui, then vitest run
 ```
 
-This executes `run.ts`, which imports `helloWord()` from `json-render-nuxt-ui`.
+`postinstall` runs `nuxt prepare` for Nuxt module codegen.

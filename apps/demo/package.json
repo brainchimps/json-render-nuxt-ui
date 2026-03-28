@@ -4,13 +4,23 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter json-render-nuxt-ui build && tsx run.ts"
+    "dev": "pnpm --filter json-render-nuxt-ui build && nuxt dev",
+    "build": "pnpm --filter json-render-nuxt-ui build && nuxt build",
+    "test": "pnpm --filter json-render-nuxt-ui build && vitest run",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "json-render-nuxt-ui": "workspace:*"
+    "@nuxt/ui": "^4.6.0",
+    "json-render-nuxt-ui": "workspace:*",
+    "nuxt": "^4.4.2",
+    "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "tsx": "4.20.5",
-    "typescript": "5.8.2"
+    "@nuxt/test-utils": "^4.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^20.8.9",
+    "playwright-core": "^1.58.2",
+    "typescript": "5.8.2",
+    "vitest": "4.1.2"
   }
 }
