@@ -622,6 +622,11 @@ export const nuxtUiComponents: ComponentMap = {
 
   Tooltip: ({ props, children }) => {
     const UTooltip = resolveComponent("UTooltip");
+    const normalizedChildren = Array.isArray(children)
+      ? children
+      : children
+        ? [children]
+        : [];
     return h(
       UTooltip,
       {
@@ -631,8 +636,8 @@ export const nuxtUiComponents: ComponentMap = {
       },
       {
         default: () =>
-          children.length > 0
-            ? children
+          normalizedChildren.length > 0
+            ? normalizedChildren
             : [h("span", { class: "underline decoration-dotted" }, "Hover me")],
       }
     );

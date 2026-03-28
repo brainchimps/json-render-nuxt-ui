@@ -76,7 +76,7 @@ type NuxtAppLike = {
  */
 export function registerNuxtUiGlobals(
   nuxtApp: NuxtAppLike,
-  resolved: Record<string, Component>,
+  resolved: Record<string, Component | unknown>,
   catalogComponents:
     | NuxtUiComponentName[]
     | Partial<Record<NuxtUiComponentName, ComponentDefinition>>,
@@ -96,7 +96,8 @@ export function registerNuxtUiGlobals(
   for (const [name, catalogName] of needed) {
     const comp = resolved[name];
     if (comp) {
-      nuxtApp.vueApp.component(name, comp);
+      const resolvedComponent = comp as Component;
+      nuxtApp.vueApp.component(name, resolvedComponent);
     } else {
       console.warn(
         `[json-render-nuxt-ui] Missing "${name}" — required by the "${catalogName}" component. ` +
