@@ -3,9 +3,10 @@ import { describe, expect, it } from "vitest";
 import App from "~/app.vue";
 
 describe("demo app (Nuxt)", () => {
-  it("renders greeting from the real app shell", async () => {
+  it("renders a one-page chat UI", async () => {
     const wrapper = await mountSuspended(App);
-    expect(wrapper.text()).toContain("json-render-nuxt-ui demo");
-    expect(wrapper.text()).toContain("Hello json-render!");
+    expect(wrapper.find('[data-testid="chat-title"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="chat-messages"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="chat-prompt"]').exists()).toBe(true);
   });
 });

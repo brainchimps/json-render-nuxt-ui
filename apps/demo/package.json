@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "pnpm --filter json-render-nuxt-ui build && nuxt dev",
     "build": "pnpm --filter json-render-nuxt-ui build && nuxt build",
-    "test": "pnpm --filter json-render-nuxt-ui build && vitest run",
+    "test": "pnpm --filter json-render-nuxt-ui build && nuxt prepare && vitest run",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@ai-sdk/gateway": "^3.0.83",
+    "@ai-sdk/vue": "^3.0.141",
     "@nuxt/ui": "^4.6.0",
+    "ai": "^6.0.141",
     "json-render-nuxt-ui": "workspace:*",
     "nuxt": "^4.4.2",
     "tailwindcss": "^4.2.2"
