@@ -9,9 +9,16 @@ export default defineNuxtConfig({
   modules: ["@nuxt/ui"],
   css: ["~/assets/css/main.css"],
 
-  alias: {
-    "json-render-nuxt-ui/catalog": resolve(pkgSrc, "catalog.ts"),
-    "json-render-nuxt-ui": resolve(pkgSrc, "index.ts"),
+  $development: {
+    alias: {
+      "json-render-nuxt-ui/catalog": resolve(pkgSrc, "catalog.ts"),
+      "json-render-nuxt-ui": resolve(pkgSrc, "index.ts"),
+    },
+    vite: {
+      optimizeDeps: {
+        exclude: ["json-render-nuxt-ui"],
+      },
+    },
   },
 
   vite: {
@@ -24,7 +31,6 @@ export default defineNuxtConfig({
         "@json-render/core",
         "@json-render/vue/schema",
       ],
-      exclude: ["json-render-nuxt-ui"],
     },
   },
   runtimeConfig: {
