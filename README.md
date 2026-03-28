@@ -1,8 +1,12 @@
 # json-render-nuxt-ui
 
+[![Vercel Deploy](https://deploy-badge.vercel.app/vercel/json-render-nuxt-ui)](https://json-render-nuxt-ui.brainchimps.com)
+
 Pre-built [Nuxt UI](https://ui.nuxt.com/) components for [json-render](https://json-render.dev/). Define a catalog, point an LLM at it, and render the streamed JSON spec as a live Nuxt UI interface.
 
 This monorepo contains the publishable package and a demo app that puts it all together with AI-powered UI generation.
+
+> **[🚀 Try the live demo](https://json-render-nuxt-ui.brainchimps.com)** 
 
 ## Packages
 
