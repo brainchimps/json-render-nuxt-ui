@@ -4,6 +4,8 @@
 
 Pre-built [Nuxt UI](https://ui.nuxt.com/) components for [json-render](https://json-render.dev/) — define a catalog, point an LLM at it, and get AI-powered UI generation with live-streamed Nuxt UI interfaces.
 
+> 100% compatible with the official [@json-render/shadcn](https://www.npmjs.com/package/@json-render/shadcn) component set (29/29) as of Mar 28, 2026, plus additional non-shadcn layout/utility components. See [SHADCN_UI_COMPONENTS_CHECKLIST.md](./packages/json-render-nuxt-ui/SHADCN_UI_COMPONENTS_CHECKLIST.md).
+
 
 ## Getting Started
 

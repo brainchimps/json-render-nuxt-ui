@@ -8,6 +8,12 @@ export default defineNuxtConfig({
   compatibilityDate: "2026-03-28",
   modules: ["@nuxt/ui"],
   css: ["~/assets/css/main.css"],
+  alias: vitest
+    ? {
+        "json-render-nuxt-ui/catalog": resolve(pkgSrc, "catalog.ts"),
+        "json-render-nuxt-ui": resolve(pkgSrc, "index.ts"),
+      }
+    : undefined,
 
   $development: {
     alias: {
@@ -31,6 +37,7 @@ export default defineNuxtConfig({
         "@json-render/core",
         "@json-render/vue/schema",
       ],
+      ...(vitest && { exclude: ["json-render-nuxt-ui"] }),
     },
   },
   runtimeConfig: {

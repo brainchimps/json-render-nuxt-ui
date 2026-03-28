@@ -192,6 +192,299 @@ export const nuxtUiComponentDefinitions = {
       "Modal dialog wrapper with optional title/description and cancel/confirm actions.",
     events: ["openChange", "confirm", "cancel"],
   },
+  Accordion: {
+    props: z.object({
+      value: z.union([z.string(), z.array(z.string())]).nullable().optional(),
+      items: z.array(
+        z.object({
+          label: z.string(),
+          value: z.string().optional(),
+          content: z.string().nullable().optional(),
+          disabled: z.boolean().optional(),
+        })
+      ),
+      type: z.enum(["single", "multiple"]).optional(),
+      collapsible: z.boolean().optional(),
+    }),
+    description:
+      "Expandable disclosure list. Supports single or multiple expanded sections and optional controlled value binding.",
+    events: ["change"],
+  },
+  Alert: {
+    props: z.object({
+      title: z.string().optional(),
+      description: z.string().nullable().optional(),
+      color: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+      variant: z
+        .enum(["solid", "outline", "soft", "subtle", "ghost", "link"])
+        .optional(),
+      icon: z.string().optional(),
+      close: z.boolean().optional(),
+    }),
+    description: "Inline status message with optional icon, color, and dismiss action.",
+  },
+  Avatar: {
+    props: z.object({
+      src: z.string().url().optional(),
+      alt: z.string().optional(),
+      icon: z.string().optional(),
+      text: z.string().optional(),
+      size: z.enum(["xs", "sm", "md", "lg", "xl"]).optional(),
+    }),
+    description:
+      "User avatar image with optional fallback text/icon and configurable size.",
+  },
+  Badge: {
+    props: z.object({
+      label: z.string(),
+      color: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+      variant: z
+        .enum(["solid", "outline", "soft", "subtle", "ghost", "link"])
+        .optional(),
+      size: z.enum(["xs", "sm", "md", "lg", "xl"]).optional(),
+    }),
+    description: "Compact status badge for tags, states, and metadata labels.",
+  },
+  Carousel: {
+    props: z.object({
+      items: z.array(z.record(z.string(), z.unknown())),
+      arrows: z.boolean().optional(),
+      dots: z.boolean().optional(),
+      loop: z.boolean().optional(),
+    }),
+    description:
+      "Horizontally scrollable carousel for card/image slides backed by an items array.",
+  },
+  Collapsible: {
+    props: z.object({
+      open: z.boolean().optional(),
+      triggerLabel: z.string().optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Collapsible container with optional trigger label and controlled open state.",
+    events: ["openChange"],
+  },
+  Drawer: {
+    props: z.object({
+      open: z.boolean().optional(),
+      title: z.string().optional(),
+      description: z.string().nullable().optional(),
+      side: z.enum(["left", "right", "top", "bottom"]).optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Slide-in drawer panel for secondary actions, filters, and contextual forms.",
+    events: ["openChange"],
+  },
+  DropdownMenu: {
+    props: z.object({
+      items: z.array(
+        z.object({
+          label: z.string(),
+          value: z.string(),
+          icon: z.string().optional(),
+          disabled: z.boolean().optional(),
+        })
+      ),
+      triggerLabel: z.string().optional(),
+      triggerIcon: z.string().optional(),
+    }),
+    description: "Action menu with trigger button and selectable menu items.",
+    events: ["select"],
+  },
+  Label: {
+    props: z.object({
+      text: z.string(),
+      forId: z.string().optional(),
+    }),
+    description: "Form field label text for inputs and controls.",
+  },
+  Pagination: {
+    props: z.object({
+      page: z.number().int().positive().optional(),
+      total: z.number().int().nonnegative(),
+      itemsPerPage: z.number().int().positive().optional(),
+    }),
+    description:
+      "Pagination controls for navigating large datasets with a current page value.",
+    events: ["change"],
+  },
+  Popover: {
+    props: z.object({
+      open: z.boolean().optional(),
+      content: z.string().optional(),
+      side: z.enum(["top", "right", "bottom", "left"]).optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Floating popover anchored to trigger content, useful for small contextual UI.",
+    events: ["openChange"],
+  },
+  Progress: {
+    props: z.object({
+      value: z.number().nonnegative(),
+      max: z.number().positive().optional(),
+      size: z.enum(["xs", "sm", "md", "lg", "xl"]).optional(),
+      color: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+    }),
+    description: "Linear progress indicator with configurable value, max, and style.",
+  },
+  RadioGroup: {
+    props: z.object({
+      value: z.string().nullable().optional(),
+      items: z.array(
+        z.object({
+          label: z.string(),
+          value: z.string(),
+          disabled: z.boolean().optional(),
+        })
+      ),
+      orientation: z.enum(["horizontal", "vertical"]).optional(),
+    }),
+    description:
+      "Single-choice radio control group with optional bound value and item options.",
+    events: ["change"],
+  },
+  Skeleton: {
+    props: z.object({
+      class: z.string().optional(),
+    }),
+    description: "Skeleton placeholder used while content is loading.",
+  },
+  Slider: {
+    props: z.object({
+      value: z.number().nullable().optional(),
+      min: z.number().optional(),
+      max: z.number().optional(),
+      step: z.number().positive().optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description:
+      "Numeric range slider with optional two-way bound value and min/max/step controls.",
+    events: ["change"],
+  },
+  Table: {
+    props: z.object({
+      columns: z.array(
+        z.object({
+          key: z.string(),
+          label: z.string(),
+        })
+      ),
+      rows: z.array(z.record(z.string(), z.unknown())),
+    }),
+    description: "Data table with explicit column configuration and row records.",
+  },
+  Tabs: {
+    props: z.object({
+      value: z.string().nullable().optional(),
+      items: z.array(
+        z.object({
+          label: z.string(),
+          value: z.string(),
+          content: z.string().optional(),
+          disabled: z.boolean().optional(),
+        })
+      ),
+    }),
+    slots: ["default"],
+    description: "Tabbed navigation for switching between related content panels.",
+    events: ["change"],
+  },
+  ToggleGroup: {
+    props: z.object({
+      type: z.enum(["single", "multiple"]).optional(),
+      value: z.union([z.string(), z.array(z.string())]).nullable().optional(),
+      items: z.array(
+        z.object({
+          label: z.string(),
+          value: z.string(),
+          disabled: z.boolean().optional(),
+        })
+      ),
+      variant: z
+        .enum(["solid", "outline", "soft", "subtle", "ghost", "link"])
+        .optional(),
+      color: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+    }),
+    description:
+      "Segmented set of toggle buttons supporting single or multiple active values.",
+    events: ["change"],
+  },
+  Toggle: {
+    props: z.object({
+      pressed: z.boolean().nullable().optional(),
+      label: z.string(),
+      color: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+      variant: z
+        .enum(["solid", "outline", "soft", "subtle", "ghost", "link"])
+        .optional(),
+      size: z.enum(["xs", "sm", "md", "lg", "xl"]).optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description: "Two-state pressed button toggle for compact boolean actions.",
+    events: ["change"],
+  },
+  Tooltip: {
+    props: z.object({
+      text: z.string(),
+      kbds: z.array(z.string()).optional(),
+      side: z.enum(["top", "right", "bottom", "left"]).optional(),
+    }),
+    slots: ["default"],
+    description: "Hover/focus tooltip with short helper text and optional key hints.",
+  },
 } satisfies Record<string, ComponentDefinition>;
 
 /**

@@ -295,4 +295,346 @@ export const nuxtUiComponents: ComponentMap = {
       }
     );
   },
+
+  Accordion: ({ props, bindings, emit }) => {
+    const UAccordion = resolveComponent("UAccordion");
+    const [value, setValue] = useBoundProp<string | string[] | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+
+    return h(UAccordion, {
+      modelValue: value ?? (props.type === "multiple" ? [] : null),
+      items: props.items,
+      type: props.type,
+      collapsible: props.collapsible,
+      "onUpdate:modelValue": (nextValue: string | string[]) => {
+        setValue(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Alert: ({ props }) => {
+    const UAlert = resolveComponent("UAlert");
+    return h(UAlert, {
+      title: props.title,
+      description: props.description ?? undefined,
+      color: props.color,
+      variant: props.variant,
+      icon: props.icon,
+      close: props.close,
+    });
+  },
+
+  Avatar: ({ props }) => {
+    const UAvatar = resolveComponent("UAvatar");
+    return h(UAvatar, {
+      src: props.src,
+      alt: props.alt,
+      icon: props.icon,
+      text: props.text,
+      size: props.size,
+    });
+  },
+
+  Badge: ({ props }) => {
+    const UBadge = resolveComponent("UBadge");
+    return h(
+      UBadge,
+      {
+        color: props.color,
+        variant: props.variant,
+        size: props.size,
+      },
+      props.label
+    );
+  },
+
+  Carousel: ({ props }) => {
+    const UCarousel = resolveComponent("UCarousel");
+    return h(UCarousel, {
+      items: props.items,
+      arrows: props.arrows,
+      dots: props.dots,
+      loop: props.loop,
+    });
+  },
+
+  Collapsible: ({ props, bindings, children, emit }) => {
+    const UCollapsible = resolveComponent("UCollapsible");
+    const [open, setOpen] = useBoundProp<boolean | undefined>(
+      props.open,
+      bindings?.open
+    );
+
+    return h(UCollapsible, {
+      open: open ?? false,
+      label: props.triggerLabel,
+      content: children,
+      "onUpdate:open": (nextOpen: boolean) => {
+        setOpen(nextOpen);
+        emit("openChange");
+      },
+    });
+  },
+
+  Drawer: ({ props, bindings, children, emit }) => {
+    const UDrawer = resolveComponent("UDrawer");
+    const [open, setOpen] = useBoundProp<boolean | undefined>(
+      props.open,
+      bindings?.open
+    );
+
+    return h(
+      UDrawer,
+      {
+        open: open ?? false,
+        title: props.title,
+        description: props.description ?? undefined,
+        side: props.side,
+        "onUpdate:open": (nextOpen: boolean) => {
+          setOpen(nextOpen);
+          emit("openChange");
+        },
+      },
+      {
+        default: () => children,
+      }
+    );
+  },
+
+  DropdownMenu: ({ props, emit }) => {
+    const UDropdownMenu = resolveComponent("UDropdownMenu");
+    return h(UDropdownMenu, {
+      items: props.items,
+      label: props.triggerLabel,
+      icon: props.triggerIcon,
+      "onUpdate:modelValue": () => {
+        emit("select");
+      },
+    });
+  },
+
+  Label: ({ props }) => {
+    return h("label", { for: props.forId }, props.text);
+  },
+
+  Pagination: ({ props, bindings, emit }) => {
+    const UPagination = resolveComponent("UPagination");
+    const [page, setPage] = useBoundProp<number | undefined>(
+      props.page,
+      bindings?.page
+    );
+
+    return h(UPagination, {
+      page: page ?? 1,
+      total: props.total,
+      itemsPerPage: props.itemsPerPage,
+      "onUpdate:page": (nextPage: number) => {
+        setPage(nextPage);
+        emit("change");
+      },
+    });
+  },
+
+  Popover: ({ props, bindings, children, emit }) => {
+    const UPopover = resolveComponent("UPopover");
+    const [open, setOpen] = useBoundProp<boolean | undefined>(
+      props.open,
+      bindings?.open
+    );
+
+    return h(
+      UPopover,
+      {
+        open: open ?? false,
+        content: props.content,
+        side: props.side,
+        "onUpdate:open": (nextOpen: boolean) => {
+          setOpen(nextOpen);
+          emit("openChange");
+        },
+      },
+      {
+        default: () => children,
+      }
+    );
+  },
+
+  Progress: ({ props }) => {
+    const UProgress = resolveComponent("UProgress");
+    return h(UProgress, {
+      modelValue: props.value,
+      max: props.max,
+      size: props.size,
+      color: props.color,
+    });
+  },
+
+  RadioGroup: ({ props, bindings, emit }) => {
+    const URadioGroup = resolveComponent("URadioGroup");
+    const [value, setValue] = useBoundProp<string | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+
+    return h(URadioGroup, {
+      modelValue: value ?? null,
+      items: props.items,
+      orientation: props.orientation,
+      "onUpdate:modelValue": (nextValue: string) => {
+        setValue(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Skeleton: ({ props }) => {
+    const USkeleton = resolveComponent("USkeleton");
+    return h(USkeleton, { class: props.class });
+  },
+
+  Slider: ({ props, bindings, emit }) => {
+    const USlider = resolveComponent("USlider");
+    const [value, setValue] = useBoundProp<number | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+
+    return h(USlider, {
+      modelValue: value ?? 0,
+      min: props.min,
+      max: props.max,
+      step: props.step,
+      disabled: props.disabled,
+      "onUpdate:modelValue": (nextValue: number) => {
+        setValue(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Table: ({ props }) => {
+    const UTable = resolveComponent("UTable");
+    return h(UTable, {
+      columns: props.columns,
+      data: props.rows,
+    });
+  },
+
+  Tabs: ({ props, bindings, children, emit }) => {
+    const UTabs = resolveComponent("UTabs");
+    const [value, setValue] = useBoundProp<string | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+
+    return h(
+      UTabs,
+      {
+        modelValue: value ?? null,
+        items: props.items,
+        "onUpdate:modelValue": (nextValue: string) => {
+          setValue(nextValue);
+          emit("change");
+        },
+      },
+      {
+        default: () => children,
+      }
+    );
+  },
+
+  ToggleGroup: ({ props, bindings, emit }) => {
+    const UButton = resolveComponent("UButton");
+    const [value, setValue] = useBoundProp<string | string[] | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+    const type = props.type ?? "single";
+
+    const update = (nextValue: string | string[]) => {
+      setValue(nextValue);
+      emit("change");
+    };
+
+    const selectedValues =
+      type === "multiple"
+        ? Array.isArray(value)
+          ? value
+          : []
+        : typeof value === "string"
+          ? [value]
+          : [];
+
+    return h(
+      "div",
+      {
+        class: "inline-flex items-center gap-2",
+        "data-on-change": update,
+      },
+      props.items.map((item) => {
+        const isActive = selectedValues.includes(item.value);
+        return h(UButton, {
+          key: item.value,
+          label: item.label,
+          color: props.color,
+          variant: isActive ? "solid" : (props.variant ?? "outline"),
+          disabled: item.disabled,
+          onClick: () => {
+            if (type === "multiple") {
+              const next = isActive
+                ? selectedValues.filter((entry) => entry !== item.value)
+                : [...selectedValues, item.value];
+              update(next);
+            } else {
+              update(item.value);
+            }
+          },
+        });
+      })
+    );
+  },
+
+  Toggle: ({ props, bindings, emit }) => {
+    const UButton = resolveComponent("UButton");
+    const [pressed, setPressed] = useBoundProp<boolean | null | undefined>(
+      props.pressed,
+      bindings?.pressed
+    );
+    const isPressed = Boolean(pressed);
+
+    return h(UButton, {
+      label: props.label,
+      color: props.color,
+      variant: isPressed ? "solid" : (props.variant ?? "outline"),
+      size: props.size,
+      disabled: props.disabled,
+      "aria-pressed": isPressed,
+      onClick: () => {
+        const nextPressed = !isPressed;
+        setPressed(nextPressed);
+        emit("change");
+      },
+    });
+  },
+
+  Tooltip: ({ props, children }) => {
+    const UTooltip = resolveComponent("UTooltip");
+    return h(
+      UTooltip,
+      {
+        text: props.text,
+        kbds: props.kbds,
+        side: props.side,
+      },
+      {
+        default: () =>
+          children.length > 0
+            ? children
+            : [h("span", { class: "underline decoration-dotted" }, "Hover me")],
+      }
+    );
+  },
 };

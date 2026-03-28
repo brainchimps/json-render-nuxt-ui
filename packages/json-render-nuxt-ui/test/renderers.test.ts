@@ -279,4 +279,195 @@ describe("component renderers", () => {
     confirmButton.props.onClick(confirmEvent);
     expect(eventBindings.confirm.emit).toHaveBeenCalledTimes(1);
   });
+
+  it("Accordion updates bound value and emits change", () => {
+    const { ctx, emit } = createBaseContext({
+      value: "item-1",
+      items: [{ label: "Item 1", value: "item-1", content: "Details" }],
+    });
+    ctx.bindings.value = "/accordion/value";
+
+    const vnode = asVNode(nuxtUiComponents.Accordion(ctx));
+    expect(vnode.type).toBe("UAccordion");
+    (vnode.props["onUpdate:modelValue"] as (value: string | string[]) => void)(
+      "item-2"
+    );
+    expect(setBoundValue).toHaveBeenCalledWith("item-2");
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Alert renders UAlert", () => {
+    const { ctx } = createBaseContext({ title: "Heads up", description: "Message" });
+    const vnode = asVNode(nuxtUiComponents.Alert(ctx));
+    expect(vnode.type).toBe("UAlert");
+  });
+
+  it("Avatar renders UAvatar", () => {
+    const { ctx } = createBaseContext({ src: "https://example.com/a.png", alt: "A" });
+    const vnode = asVNode(nuxtUiComponents.Avatar(ctx));
+    expect(vnode.type).toBe("UAvatar");
+  });
+
+  it("Badge renders UBadge with label slot content", () => {
+    const { ctx } = createBaseContext({ label: "Beta", color: "primary" });
+    const vnode = asVNode(nuxtUiComponents.Badge(ctx));
+    expect(vnode.type).toBe("UBadge");
+    expect(vnode.children).toBe("Beta");
+  });
+
+  it("Carousel renders UCarousel", () => {
+    const { ctx } = createBaseContext({ items: [{ title: "Slide" }] });
+    const vnode = asVNode(nuxtUiComponents.Carousel(ctx));
+    expect(vnode.type).toBe("UCarousel");
+  });
+
+  it("Collapsible updates open binding and emits openChange", () => {
+    const { ctx, emit } = createBaseContext({ open: true });
+    ctx.bindings.open = "/collapsible/open";
+    const vnode = asVNode(nuxtUiComponents.Collapsible(ctx));
+    expect(vnode.type).toBe("UCollapsible");
+    (vnode.props["onUpdate:open"] as (value: boolean) => void)(false);
+    expect(setBoundValue).toHaveBeenCalledWith(false);
+    expect(emit).toHaveBeenCalledWith("openChange");
+  });
+
+  it("Drawer updates open binding and emits openChange", () => {
+    const { ctx, emit } = createBaseContext({ open: true, title: "Drawer" });
+    ctx.bindings.open = "/drawer/open";
+    const vnode = asVNode(nuxtUiComponents.Drawer(ctx));
+    expect(vnode.type).toBe("UDrawer");
+    (vnode.props["onUpdate:open"] as (value: boolean) => void)(false);
+    expect(setBoundValue).toHaveBeenCalledWith(false);
+    expect(emit).toHaveBeenCalledWith("openChange");
+  });
+
+  it("DropdownMenu emits select when model value changes", () => {
+    const { ctx, emit } = createBaseContext({
+      items: [{ label: "Edit", value: "edit" }],
+    });
+    const vnode = asVNode(nuxtUiComponents.DropdownMenu(ctx));
+    expect(vnode.type).toBe("UDropdownMenu");
+    (vnode.props["onUpdate:modelValue"] as (value: string) => void)("edit");
+    expect(emit).toHaveBeenCalledWith("select");
+  });
+
+  it("Label renders a semantic label element", () => {
+    const { ctx } = createBaseContext({ text: "Email" });
+    const vnode = asVNode(nuxtUiComponents.Label(ctx));
+    expect(vnode.type).toBe("label");
+    expect(vnode.children).toBe("Email");
+  });
+
+  it("Pagination updates page binding and emits change", () => {
+    const { ctx, emit } = createBaseContext({ page: 1, total: 20, itemsPerPage: 10 });
+    ctx.bindings.page = "/pagination/page";
+    const vnode = asVNode(nuxtUiComponents.Pagination(ctx));
+    expect(vnode.type).toBe("UPagination");
+    (vnode.props["onUpdate:page"] as (value: number) => void)(2);
+    expect(setBoundValue).toHaveBeenCalledWith(2);
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Popover updates open binding and emits openChange", () => {
+    const { ctx, emit } = createBaseContext({ open: true, content: "Body" });
+    ctx.bindings.open = "/popover/open";
+    const vnode = asVNode(nuxtUiComponents.Popover(ctx));
+    expect(vnode.type).toBe("UPopover");
+    (vnode.props["onUpdate:open"] as (value: boolean) => void)(false);
+    expect(setBoundValue).toHaveBeenCalledWith(false);
+    expect(emit).toHaveBeenCalledWith("openChange");
+  });
+
+  it("Progress renders UProgress", () => {
+    const { ctx } = createBaseContext({ value: 42, max: 100 });
+    const vnode = asVNode(nuxtUiComponents.Progress(ctx));
+    expect(vnode.type).toBe("UProgress");
+  });
+
+  it("RadioGroup updates bound value and emits change", () => {
+    const { ctx, emit } = createBaseContext({
+      value: "a",
+      items: [{ label: "Option A", value: "a" }],
+    });
+    ctx.bindings.value = "/radio/value";
+    const vnode = asVNode(nuxtUiComponents.RadioGroup(ctx));
+    expect(vnode.type).toBe("URadioGroup");
+    (vnode.props["onUpdate:modelValue"] as (value: string) => void)("b");
+    expect(setBoundValue).toHaveBeenCalledWith("b");
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Skeleton renders USkeleton", () => {
+    const { ctx } = createBaseContext({ class: "h-4 w-20" });
+    const vnode = asVNode(nuxtUiComponents.Skeleton(ctx));
+    expect(vnode.type).toBe("USkeleton");
+  });
+
+  it("Slider updates bound value and emits change", () => {
+    const { ctx, emit } = createBaseContext({ value: 10, min: 0, max: 100 });
+    ctx.bindings.value = "/slider/value";
+    const vnode = asVNode(nuxtUiComponents.Slider(ctx));
+    expect(vnode.type).toBe("USlider");
+    (vnode.props["onUpdate:modelValue"] as (value: number) => void)(20);
+    expect(setBoundValue).toHaveBeenCalledWith(20);
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Table renders UTable", () => {
+    const { ctx } = createBaseContext({
+      columns: [{ key: "name", label: "Name" }],
+      rows: [{ name: "Ada" }],
+    });
+    const vnode = asVNode(nuxtUiComponents.Table(ctx));
+    expect(vnode.type).toBe("UTable");
+  });
+
+  it("Tabs updates bound value and emits change", () => {
+    const { ctx, emit } = createBaseContext({
+      value: "one",
+      items: [{ label: "One", value: "one", content: "One body" }],
+    });
+    ctx.bindings.value = "/tabs/value";
+    const vnode = asVNode(nuxtUiComponents.Tabs(ctx));
+    expect(vnode.type).toBe("UTabs");
+    (vnode.props["onUpdate:modelValue"] as (value: string) => void)("two");
+    expect(setBoundValue).toHaveBeenCalledWith("two");
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("ToggleGroup updates bound value and emits change", () => {
+    const { ctx, emit } = createBaseContext({
+      type: "single",
+      value: "bold",
+      items: [{ label: "Bold", value: "bold" }],
+    });
+    ctx.bindings.value = "/toggle-group/value";
+    const vnode = asVNode(nuxtUiComponents.ToggleGroup(ctx));
+    expect(vnode.type).toBe("div");
+    (vnode.props["data-on-change"] as (value: string | string[]) => void)("italic");
+    expect(setBoundValue).toHaveBeenCalledWith("italic");
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Toggle updates pressed binding and emits change", () => {
+    const { ctx, emit } = createBaseContext({
+      pressed: true,
+      label: "Pin",
+    });
+    ctx.bindings.pressed = "/toggle/pressed";
+    const vnode = asVNode(nuxtUiComponents.Toggle(ctx));
+    expect(vnode.type).toBe("UButton");
+    (vnode.props.onClick as () => void)();
+    expect(setBoundValue).toHaveBeenCalledWith(false);
+    expect(emit).toHaveBeenCalledWith("change");
+  });
+
+  it("Tooltip renders UTooltip with trigger slot", () => {
+    const { ctx } = createBaseContext({ text: "Hint" });
+    const vnode = asVNode(nuxtUiComponents.Tooltip(ctx));
+    expect(vnode.type).toBe("UTooltip");
+    expect(typeof (vnode.children as Record<string, () => unknown>).default).toBe(
+      "function"
+    );
+  });
 });
