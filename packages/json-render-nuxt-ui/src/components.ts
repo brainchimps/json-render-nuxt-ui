@@ -89,4 +89,139 @@ export const nuxtUiComponents: ComponentMap = {
       },
     });
   },
+
+  Select: ({ props, bindings, emit }) => {
+    const USelect = resolveComponent("USelect");
+    const [value, setValue] = useBoundProp<
+      string | number | boolean | null | undefined
+    >(props.value, bindings?.value);
+
+    return h(USelect, {
+      modelValue: value ?? null,
+      items: props.items ?? [],
+      placeholder: props.placeholder,
+      size: props.size,
+      disabled: props.disabled,
+      "onUpdate:modelValue": (nextValue: string | number | boolean | null) => {
+        setValue(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Checkbox: ({ props, bindings, emit }) => {
+    const UCheckbox = resolveComponent("UCheckbox");
+    const [checked, setChecked] = useBoundProp<boolean | null | undefined>(
+      props.checked,
+      bindings?.checked
+    );
+
+    return h(UCheckbox, {
+      modelValue: checked ?? false,
+      label: props.label,
+      description: props.description ?? undefined,
+      disabled: props.disabled,
+      "onUpdate:modelValue": (nextValue: boolean) => {
+        setChecked(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Textarea: ({ props, bindings, emit }) => {
+    const UTextarea = resolveComponent("UTextarea");
+    const [value, setValue] = useBoundProp<string | null | undefined>(
+      props.value,
+      bindings?.value
+    );
+
+    return h(UTextarea, {
+      modelValue: value ?? "",
+      placeholder: props.placeholder,
+      rows: props.rows,
+      autoresize: props.autoresize,
+      maxrows: props.maxrows,
+      disabled: props.disabled,
+      "onUpdate:modelValue": (nextValue: string) => {
+        setValue(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Switch: ({ props, bindings, emit }) => {
+    const USwitch = resolveComponent("USwitch");
+    const [checked, setChecked] = useBoundProp<boolean | null | undefined>(
+      props.checked,
+      bindings?.checked
+    );
+
+    return h(USwitch, {
+      modelValue: checked ?? false,
+      label: props.label,
+      description: props.description ?? undefined,
+      disabled: props.disabled,
+      "onUpdate:modelValue": (nextValue: boolean) => {
+        setChecked(nextValue);
+        emit("change");
+      },
+    });
+  },
+
+  Dialog: ({ props, bindings, children, emit, on }) => {
+    const UModal = resolveComponent("UModal");
+    const UButton = resolveComponent("UButton");
+    const [open, setOpen] = useBoundProp<boolean | undefined>(
+      props.open,
+      bindings?.open
+    );
+    const confirm = on("confirm");
+    const cancel = on("cancel");
+
+    const updateOpen = (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      emit("openChange");
+    };
+
+    return h(
+      UModal,
+      {
+        open: open ?? false,
+        title: props.title,
+        description: props.description ?? undefined,
+        "onUpdate:open": (nextOpen: boolean) => updateOpen(nextOpen),
+      },
+      {
+        default: () => children,
+        footer: () =>
+          h("div", { class: "flex justify-end gap-2" }, [
+            h(UButton, {
+              variant: "ghost",
+              label: props.cancelLabel ?? "Cancel",
+              onClick: (event: Event) => {
+                if (cancel.shouldPreventDefault) {
+                  event.preventDefault();
+                }
+                cancel.emit();
+                updateOpen(false);
+              },
+            }),
+            h(UButton, {
+              color: props.confirmColor ?? "primary",
+              variant: props.confirmVariant ?? "solid",
+              label: props.confirmLabel ?? "Confirm",
+              onClick: (event: Event) => {
+                if (confirm.shouldPreventDefault) {
+                  event.preventDefault();
+                }
+                confirm.emit();
+                if (props.closeOnConfirm !== false) {
+                  updateOpen(false);
+                }
+              },
+            }),
+          ]),
+      }
+    );
+  },
 };

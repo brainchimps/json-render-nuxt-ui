@@ -109,6 +109,16 @@ const catalog = defineCatalog(schema, {
 |-----------|-------------|
 | `Button` | Clickable button (emits `press`) |
 | `Input` | Text input with optional two-way state binding on `value` |
+| `Select` | Select input with optional two-way state binding on `value` |
+| `Checkbox` | Checkbox with optional two-way state binding on `checked` |
+| `Textarea` | Multiline input with optional two-way state binding on `value` |
+| `Switch` | Toggle switch with optional two-way state binding on `checked` |
+
+### Overlay
+
+| Component | Description |
+|-----------|-------------|
+| `Dialog` | Modal dialog with open binding and `confirm` / `cancel` events |
 
 ## Built-in Actions
 

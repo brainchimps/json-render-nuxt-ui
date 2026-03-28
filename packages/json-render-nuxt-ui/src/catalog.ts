@@ -71,6 +71,92 @@ export const nuxtUiComponentDefinitions = {
       "Text input field. Supports two-way binding via $bindState on value and emits change on input.",
     events: ["change"],
   },
+  Select: {
+    props: z.object({
+      value: z.union([z.string(), z.number(), z.boolean()]).nullable().optional(),
+      items: z
+        .array(
+          z.union([
+            z.string(),
+            z.object({
+              label: z.string(),
+              value: z.union([z.string(), z.number(), z.boolean()]),
+              disabled: z.boolean().optional(),
+            }),
+          ])
+        )
+        .optional(),
+      placeholder: z.string().optional(),
+      size: z.enum(["xs", "sm", "md", "lg", "xl"]).optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description:
+      "Select input with item list and optional two-way binding via $bindState on value.",
+    events: ["change"],
+  },
+  Checkbox: {
+    props: z.object({
+      checked: z.boolean().nullable().optional(),
+      label: z.string().optional(),
+      description: z.string().nullable().optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description:
+      "Checkbox control with optional label/description and two-way binding via $bindState on checked.",
+    events: ["change"],
+  },
+  Textarea: {
+    props: z.object({
+      value: z.string().nullable().optional(),
+      placeholder: z.string().optional(),
+      rows: z.number().int().positive().optional(),
+      autoresize: z.boolean().optional(),
+      maxrows: z.number().int().positive().optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description:
+      "Multiline text input supporting rows/autoresize and two-way binding via $bindState on value.",
+    events: ["change"],
+  },
+  Switch: {
+    props: z.object({
+      checked: z.boolean().nullable().optional(),
+      label: z.string().optional(),
+      description: z.string().nullable().optional(),
+      disabled: z.boolean().optional(),
+    }),
+    description:
+      "Boolean toggle switch with optional label/description and two-way binding via $bindState on checked.",
+    events: ["change"],
+  },
+  Dialog: {
+    props: z.object({
+      open: z.boolean().optional(),
+      title: z.string().optional(),
+      description: z.string().nullable().optional(),
+      confirmLabel: z.string().optional(),
+      cancelLabel: z.string().optional(),
+      confirmColor: z
+        .enum([
+          "primary",
+          "secondary",
+          "success",
+          "info",
+          "warning",
+          "error",
+          "neutral",
+        ])
+        .optional(),
+      confirmVariant: z
+        .enum(["solid", "outline", "soft", "subtle", "ghost", "link"])
+        .optional(),
+      closeOnConfirm: z.boolean().optional(),
+    }),
+    slots: ["default"],
+    description:
+      "Modal dialog wrapper with optional title/description and cancel/confirm actions.",
+    events: ["openChange", "confirm", "cancel"],
+  },
 } satisfies Record<string, ComponentDefinition>;
 
 /**
