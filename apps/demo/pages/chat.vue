@@ -171,8 +171,23 @@
           :class="showOpsPanel && activeRenderTab === 'jsonl' ? 'hidden lg:flex!' : 'flex'"
         >
           <JSONUIProvider :registry="registry" :initial-state="{}">
-            <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
+            <div v-if="hasRenderedSpec && !specErrors.length" class="flex min-h-full items-center justify-center p-4">
               <Renderer :spec="renderedSpec" :registry="registry" :loading="isGenerating" />
+            </div>
+            <div v-else-if="specErrors.length" class="flex flex-1 flex-col items-center justify-center gap-4 text-muted p-6">
+              <UIcon name="i-lucide-triangle-alert" class="size-6 text-warning" />
+              <div class="text-center space-y-1">
+                <p class="text-sm font-medium text-default">Generated UI has issues</p>
+                <p class="text-xs">The AI produced an invalid spec. Try rephrasing or regenerating.</p>
+              </div>
+              <ul class="text-xs space-y-0.5 max-w-md">
+                <li v-for="(err, i) in specErrors.slice(0, 5)" :key="i" class="truncate">
+                  &bull; {{ err }}
+                </li>
+                <li v-if="specErrors.length > 5" class="text-dimmed">
+                  &hellip; and {{ specErrors.length - 5 }} more
+                </li>
+              </ul>
             </div>
             <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
               <template v-if="isGenerating">
@@ -214,7 +229,7 @@ const {
   addAssistantMessage,
 } = useChatSession();
 
-const { registry, renderedSpec, hasRenderedSpec, isGenerating, uiError, rawLines, send } =
+const { registry, renderedSpec, hasRenderedSpec, isGenerating, uiError, rawLines, specErrors, send } =
   useJsonRender();
 
 const input = ref("");

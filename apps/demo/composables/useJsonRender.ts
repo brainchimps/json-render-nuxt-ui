@@ -1,4 +1,4 @@
-import { isNonEmptySpec } from "@json-render/core";
+import { isNonEmptySpec, validateSpec, type Spec } from "@json-render/core";
 import { useUIStream } from "@json-render/vue";
 import { registry } from "~/shared/json-render-registry";
 
@@ -8,6 +8,14 @@ function getGenerationErrorDescription(error: unknown): string {
     return "Add AI_GATEWAY_API_KEY to apps/demo/.env";
   }
   return "UI generation failed. Please try again.";
+}
+
+function getSpecErrors(spec: unknown): string[] {
+  if (!spec || typeof spec !== "object") return [];
+  const { issues } = validateSpec(spec as Spec);
+  return issues
+    .filter((i) => i.severity === "error")
+    .map((i) => i.message);
 }
 
 export function useJsonRender() {
@@ -30,6 +38,12 @@ export function useJsonRender() {
   const renderedSpec = computed(() => ui.spec.value);
   const hasRenderedSpec = computed(() => isNonEmptySpec(renderedSpec.value));
 
+  const specErrors = computed(() =>
+    !isGenerating.value && hasRenderedSpec.value
+      ? getSpecErrors(renderedSpec.value)
+      : [],
+  );
+
   return {
     registry,
     renderedSpec,
@@ -37,6 +51,7 @@ export function useJsonRender() {
     isGenerating,
     uiError,
     rawLines,
+    specErrors,
     send: ui.send,
   };
 }
