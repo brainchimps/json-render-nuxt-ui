@@ -2,6 +2,8 @@
 
 Pre-built [Nuxt UI](https://ui.nuxt.com/) components for [json-render](https://json-render.dev/). Drop-in catalog definitions and Vue implementations to render JSON specs with Nuxt UI.
 
+> **[🚀 Try the live demo](https://json-render-nuxt-ui.brainchimps.com)** 
+
 ## Compatibility
 
 This package aims for compatibility with the official json-render shadcn package and tracks progress against its UI component set in [`SHADCN_UI_COMPONENTS_CHECKLIST.md`](./SHADCN_UI_COMPONENTS_CHECKLIST.md).
