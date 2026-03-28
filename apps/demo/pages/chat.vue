@@ -285,6 +285,17 @@ async function onReload() {
   await submitPrompt(lastSubmittedPrompt.value);
 }
 
+definePageMeta({
+  middleware: [
+    function (to) {
+      const { chatMessages, pendingPrompt } = useChatSession();
+      if (!pendingPrompt.value && chatMessages.value.length === 0) {
+        return navigateTo("/", { replace: true });
+      }
+    },
+  ],
+});
+
 onMounted(async () => {
   if (pendingPrompt.value) {
     const prompt = pendingPrompt.value;

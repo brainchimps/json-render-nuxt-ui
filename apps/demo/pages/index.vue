@@ -108,13 +108,13 @@ const input = ref("");
 
 const chatStatus = computed(() => (isGenerating.value ? "submitted" : "ready"));
 
-const greetingMessages = computed<DemoChatMessage[]>(() => [
+const greetingMessages: DemoChatMessage[] = [
   {
     id: "assistant-greeting",
     role: "assistant",
     parts: [{ type: "text", text: "What can I build for you today?" }],
   },
-]);
+];
 
 const starterPrompts = [
   {
