@@ -12,13 +12,18 @@
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.83",
     "@ai-sdk/vue": "^3.0.141",
+    "@json-render/core": "^0.16.0",
+    "@json-render/vue": "^0.16.0",
     "@nuxt/ui": "^4.6.0",
     "ai": "^6.0.141",
     "json-render-nuxt-ui": "workspace:*",
     "nuxt": "^4.4.2",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.99",
+    "@iconify-json/simple-icons": "^1.2.75",
     "@nuxt/test-utils": "^4.0.0",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^20.8.9",

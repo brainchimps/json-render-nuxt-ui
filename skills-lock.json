@@ -1,10 +1,20 @@
 {
   "version": 1,
   "skills": {
+    "core": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "ee0feec2d99e508c9561455afa6697c8ce3f6ab03b5428fe671b881abb0a022f"
+    },
     "nuxt-ui": {
       "source": "nuxt/ui",
       "sourceType": "github",
       "computedHash": "9b7ff4c14185b7205c04c7ef41969d7b5c01e59c85e6d64083a7f497bf90b8d7"
+    },
+    "vue": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "48423d8d0c69b434ce564f5b05dd66c9767acc77bc8c82fec3f0bf98256089bb"
     }
   }
 }

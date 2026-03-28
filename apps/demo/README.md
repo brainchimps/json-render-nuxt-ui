@@ -2,6 +2,14 @@
 
 Nuxt 4 app that consumes the local [`json-render-nuxt-ui`](../../packages/json-render-nuxt-ui) workspace package.
 
+## Demo UX notes
+
+- The chat remains centered and compact until a valid `json-render` spec is detected in the latest assistant message.
+- When a spec is present:
+  - Desktop switches to split layout (`chat` left, `rendered UI` right).
+  - Mobile uses stacked layout (`rendered UI` top, `chat` bottom).
+- Use the "Weekend plan sample" test prompt chip under the greeting to quickly seed a compatible prompt.
+
 ## Environment
 
 Create [`apps/demo/.env`](./.env) from [`apps/demo/.env.example`](./.env.example):

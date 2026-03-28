@@ -1,33 +1,86 @@
 <template>
   <UApp>
-    <div class="min-h-screen flex items-center justify-center px-4">
-      <UContainer class="w-full max-w-3xl">
-        <UCard class="overflow-hidden">
+    <div class="h-dvh overflow-hidden px-4 py-6 lg:px-6">
+      <div :class="containerClasses">
+        <div :class="layoutClasses">
+          <UCard :class="chatCardClasses">
           <template #header>
             <h1 data-testid="chat-title" class="text-lg font-semibold">
               <code>json-render-nuxt-ui</code>
             </h1>
           </template>
-          <p class="text-sm text-muted mb-4">
-            {{ greeting }}
-          </p>
-
-          <div
-            :class="
-              hasMessages
-                ? 'flex h-[60vh] min-h-96 max-h-[70vh] flex-col'
-                : 'flex flex-col'
-            "
+          <div :class="chatContentClasses">
+          <UChatMessages
+            class="mb-4"
+            :messages="greetingMessages"
+            status="ready"
+            :auto-scroll="false"
+            :should-scroll-to-bottom="false"
+            :ui="{ root: 'w-full flex-none px-0 gap-1' }"
           >
+            <template #content="{ message }">
+              <template
+                v-for="(part, index) in message.parts"
+                :key="`${message.id}-${part.type}-${index}`"
+              >
+                <p
+                  v-if="isTextUIPart(part)"
+                  class="whitespace-pre-wrap wrap-break-word"
+                >
+                  {{ part.text }}
+                </p>
+              </template>
+            </template>
+          </UChatMessages>
+          <div
+            v-if="!hasMessages"
+            data-testid="starter-chips"
+            class="-mt-8 mb-4 ml-2 flex flex-wrap items-center gap-2"
+          >
+            <button
+              v-for="(starter, index) in starterPrompts"
+              :key="starter.label"
+              :data-testid="`starter-chip-${index}`"
+              type="button"
+              class="cursor-pointer inline-flex items-center gap-1.5 rounded-full border border-muted px-3 py-1.5 text-sm text-muted transition-colors hover:bg-elevated hover:text-default disabled:cursor-not-allowed disabled:opacity-60"
+              :disabled="isGenerating"
+              @click="useStarterPrompt(starter.prompt)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="h-3 w-3"
+                aria-hidden="true"
+              >
+                <path
+                  d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                />
+                <path d="M20 2v4" />
+                <path d="M22 4h-4" />
+                <circle cx="4" cy="20" r="2" />
+              </svg>
+              {{ starter.label }}
+            </button>
+          </div>
+
+          <div :class="chatBodyClasses">
             <div
               data-testid="chat-messages"
               v-show="hasMessages"
-              class="flex-1 min-h-0 overflow-hidden"
+              class="flex-1 min-h-0 overflow-auto pr-1"
             >
               <UChatMessages
                 class="h-full overflow-y-auto pr-1"
-                :messages="chat.messages"
-                :status="chat.status"
+                :messages="chatMessages"
+                :status="chatStatus"
+                should-auto-scroll
               >
                 <template #content="{ message }">
                   <template
@@ -42,14 +95,23 @@
                     </p>
                   </template>
                 </template>
+                <template #indicator>
+                  <UButton
+                    class="px-0"
+                    color="neutral"
+                    variant="link"
+                    loading
+                    label="Generating UI..."
+                  />
+                </template>
               </UChatMessages>
             </div>
 
-            <div data-testid="chat-prompt" class="mt-4 shrink-0">
+            <div data-testid="chat-prompt" class="mt-auto shrink-0 pt-4">
               <UChatPrompt
                 variant="subtle"
                 v-model="input"
-                :error="chat.error"
+                :error="uiError"
                 autofocus
                 @submit="onSubmit"
               >
@@ -59,36 +121,71 @@
                     :items="availableModels"
                     :icon="selectedModelIcon"
                     variant="ghost"
-                    :disabled="isModelLocked"
+                    :disabled="isModelLocked || isGenerating"
                     :ui="{ base: 'w-56' }"
                     placeholder="Select a model"
                   />
                 </template>
                 <UChatPromptSubmit
-                  :status="chat.status"
-                  @stop="chat.stop()"
-                  @reload="chat.regenerate()"
+                  :status="chatStatus"
+                  @reload="onReload"
                 />
               </UChatPrompt>
             </div>
           </div>
-        </UCard>
-      </UContainer>
+          </div>
+          </UCard>
+
+          <UCard
+            v-if="hasRenderedSpec"
+            data-testid="render-panel"
+            class="order-1 min-h-0 overflow-auto lg:order-2"
+          >
+            <JSONUIProvider :registry="jsonRenderRegistry" :initial-state="{}">
+              <div class="flex min-h-full items-center justify-center p-4">
+                <Renderer :spec="renderedSpec" :registry="jsonRenderRegistry" />
+              </div>
+            </JSONUIProvider>
+          </UCard>
+        </div>
+      </div>
     </div>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import { Chat } from "@ai-sdk/vue";
-import { DefaultChatTransport, isTextUIPart } from "ai";
-import { helloWord } from "json-render-nuxt-ui";
+import { isNonEmptySpec } from "@json-render/core";
+import { JSONUIProvider, Renderer, useUIStream } from "@json-render/vue";
+import { isTextUIPart } from "ai";
 import {
   ALLOWED_CHAT_MODELS,
   OPENAI_ICON,
   type ChatModelOption,
 } from "~/shared/models";
+import {
+  registry as jsonRenderRegistry,
+} from "~/shared/json-render";
+const greeting = "What can I build for you today?";
+type DemoChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  parts: Array<{ type: "text"; text: string }>;
+};
 
-const greeting = helloWord();
+const starterPrompts = [
+  {
+    label: "Project Status Board",
+    prompt: "Create a simple project status dashboard with progress stats.",
+  },
+  {
+    label: "Workout Planner",
+    prompt: "Build a weekly workout planner with three focus days.",
+  },
+  {
+    label: "Launch Checklist",
+    prompt: "Design a launch checklist with priorities and due dates.",
+  },
+];
 const input = ref("");
 const toast = useToast();
 const runtimeConfig = useRuntimeConfig();
@@ -111,33 +208,110 @@ const selectedModelIcon = computed(() => {
       ?.icon ?? OPENAI_ICON
   );
 });
-const hasMessages = computed(() => chat.messages.length > 0);
 
-function getChatErrorDescription(error: unknown): string {
+function getGenerationErrorDescription(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (message.includes("AI_GATEWAY_API_KEY")) {
     return "Add AI_GATEWAY_API_KEY to apps/demo/.env";
   }
 
-  return "Chat request failed. Please try again.";
+  return "UI generation failed. Please try again.";
 }
 
-const chat = new Chat({
-  transport: new DefaultChatTransport({ api: "/api/chat" }),
+const ui = useUIStream({
+  api: "/api/generate",
   onError(error) {
     toast.add({
-      title: "Chat unavailable",
-      description: getChatErrorDescription(error),
+      title: "Generation unavailable",
+      description: getGenerationErrorDescription(error),
       color: "error",
     });
   },
 });
+const isGenerating = computed(() => ui.isStreaming.value);
+const uiError = computed(() => ui.error.value ?? undefined);
+const chatStatus = computed(() => (isGenerating.value ? "submitted" : "ready"));
+const greetingMessages = computed<DemoChatMessage[]>(() => [
+  {
+    id: "assistant-greeting",
+    role: "assistant",
+    parts: [{ type: "text", text: greeting }],
+  },
+]);
 
-function onSubmit() {
+const chatMessages = ref<DemoChatMessage[]>([]);
+const hasMessages = computed(() => chatMessages.value.length > 0);
+const renderedSpec = computed(() => ui.spec.value);
+const hasRenderedSpec = computed(() => isNonEmptySpec(renderedSpec.value));
+const lastSubmittedPrompt = ref<string | null>(null);
+const containerClasses = computed(() =>
+  hasRenderedSpec.value
+    ? "mx-auto h-full w-full"
+    : "mx-auto h-full w-full max-w-3xl flex items-center"
+);
+const layoutClasses = computed(() =>
+  hasRenderedSpec.value
+    ? "grid h-full min-h-0 grid-rows-[minmax(0,1fr)_minmax(320px,1fr)] gap-4 lg:grid-cols-2 lg:gap-6 lg:grid-rows-1"
+    : "w-full"
+);
+const chatCardClasses = computed(() =>
+  hasRenderedSpec.value
+    ? "order-2 flex h-full min-h-0 flex-col overflow-hidden lg:order-1"
+    : "overflow-hidden"
+);
+const chatContentClasses = computed(() =>
+  hasRenderedSpec.value
+    ? "flex flex-1 min-h-0 flex-col"
+    : hasMessages.value
+      ? "flex h-[60vh] min-h-96 max-h-[70vh] flex-col"
+      : ""
+);
+const chatBodyClasses = computed(() => {
+  if (hasRenderedSpec.value) {
+    return hasMessages.value
+      ? "flex flex-1 min-h-0 flex-col"
+      : "flex flex-1 min-h-0 flex-col justify-end";
+  }
+
+  return hasMessages.value ? "flex flex-1 min-h-0 flex-col" : "flex flex-col";
+});
+
+async function useStarterPrompt(prompt: string) {
+  if (isGenerating.value) return;
+  input.value = prompt;
+  await onSubmit();
+}
+
+async function submitPrompt(text: string) {
+  lastSubmittedPrompt.value = text;
+  chatMessages.value.push({
+    id: `user-${Date.now()}-${chatMessages.value.length}`,
+    role: "user",
+    parts: [{ type: "text", text }],
+  });
+
+  await ui.send(text, {
+    model: selectedModel.value,
+    currentSpec: renderedSpec.value ?? undefined,
+  });
+
+  chatMessages.value.push({
+    id: `assistant-${Date.now()}-${chatMessages.value.length}`,
+    role: "assistant",
+    parts: [{ type: "text", text: "Generated UI updated." }],
+  });
+}
+
+async function onSubmit() {
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || isGenerating.value) return;
 
-  chat.sendMessage({ text }, { body: { model: selectedModel.value } });
+  await submitPrompt(text);
   input.value = "";
+}
+
+async function onReload() {
+  if (!lastSubmittedPrompt.value || isGenerating.value) return;
+  await submitPrompt(lastSubmittedPrompt.value);
 }
 </script>

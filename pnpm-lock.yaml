@@ -16,6 +16,12 @@ importers:
       '@ai-sdk/vue':
         specifier: ^3.0.141
         version: 3.0.141(vue@3.5.31(typescript@5.8.2))(zod@4.3.6)
+      '@json-render/core':
+        specifier: ^0.16.0
+        version: 0.16.0(zod@4.3.6)
+      '@json-render/vue':
+        specifier: ^0.16.0
+        version: 0.16.0(vue@3.5.31(typescript@5.8.2))(zod@4.3.6)
       '@nuxt/ui':
         specifier: ^4.6.0
         version: 4.6.0(@tiptap/extensions@3.21.0(@tiptap/core@3.21.0(@tiptap/pm@3.21.0))(@tiptap/pm@3.21.0))(@tiptap/y-tiptap@3.0.2(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.7)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(db0@0.3.4)(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.2)(tailwindcss@4.2.2)(typescript@5.8.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.20.5)(yaml@2.8.3))(vue-router@5.0.4(@vue/compiler-sfc@3.5.31)(vue@3.5.31(typescript@5.8.2)))(vue@3.5.31(typescript@5.8.2))(yjs@13.6.30)(zod@4.3.6)
@@ -31,7 +37,16 @@ importers:
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
+      '@iconify-json/lucide':
+        specifier: ^1.2.99
+        version: 1.2.99
+      '@iconify-json/simple-icons':
+        specifier: ^1.2.75
+        version: 1.2.75
       '@nuxt/test-utils':
         specifier: ^4.0.0
         version: 4.0.0(@vue/test-utils@2.4.6)(happy-dom@20.8.9)(magicast@0.5.2)(playwright-core@1.58.2)(typescript@5.8.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.20.5)(yaml@2.8.3))(vitest@4.1.2(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.8.9)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.20.5)(yaml@2.8.3)))
@@ -587,6 +602,12 @@ packages:
   '@floating-ui/vue@1.1.11':
     resolution: {integrity: sha512-HzHKCNVxnGS35r9fCHBc3+uCnjw9IWIlCPL683cGgM9Kgj2BiAl8x1mS7vtvP6F9S/e/q4O6MApwSHj8hNLGfw==}
 
+  '@iconify-json/lucide@1.2.99':
+    resolution: {integrity: sha512-XE2Pg8uax2uN3ZbvvnO0C5ADgZOyUgEPiwnhD/xrJwz/bfpWwL3mbDwxntEWB2G1mwo2OqKMF50/jp6ia2QzKw==}
+
+  '@iconify-json/simple-icons@1.2.75':
+    resolution: {integrity: sha512-KvcCUbvcBWb0sbqLIxHoY8z5/piXY08wcY9gfMhF+ph3AfzGMaSmZFkUY71HSXAljQngXkgs4bdKdekO0HQWvg==}
+
   '@iconify/collections@1.0.666':
     resolution: {integrity: sha512-dAwFrwbb0exAEJeM9sbLhCTcTcFxUpzvH2fm0dLKCJ10QMna0MSWKEk3Z0QM75QT2d13m9zytjcMSZxUEQt9iw==}
 
@@ -636,6 +657,17 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@json-render/core@0.16.0':
+    resolution: {integrity: sha512-qQp8BB/3pWYapTGXBDSBMXRCdrC05VJPLL3drXMPX/QbUB3nuvtyXUGmAZFUz8eLUy7JImODvb3GNIq38dGzhQ==}
+    peerDependencies:
+      zod: ^4.0.0
+
+  '@json-render/vue@0.16.0':
+    resolution: {integrity: sha512-tVuwGqL5d+Wtr9tMn407dMClEht8k1tFSssOPlvwIfk1PuVXwW0TfS4v5PuAJNhXAADJUADAmZutBYSE/rKk/Q==}
+    peerDependencies:
+      vue: ^3.5.0
+      zod: ^4.0.0
 
   '@kwsites/file-exists@1.1.1':
     resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
@@ -5336,6 +5368,14 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@iconify-json/lucide@1.2.99':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/simple-icons@1.2.75':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/collections@1.0.666':
     dependencies:
       '@iconify/types': 2.0.0
@@ -5399,6 +5439,16 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@json-render/core@0.16.0(zod@4.3.6)':
+    dependencies:
+      zod: 4.3.6
+
+  '@json-render/vue@0.16.0(vue@3.5.31(typescript@5.8.2))(zod@4.3.6)':
+    dependencies:
+      '@json-render/core': 0.16.0(zod@4.3.6)
+      vue: 3.5.31(typescript@5.8.2)
+      zod: 4.3.6
 
   '@kwsites/file-exists@1.1.1':
     dependencies:
