@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto h-full w-full max-w-3xl flex items-center">
+  <div class="mx-auto h-full w-full max-w-3xl flex flex-col items-center justify-center gap-3">
     <UCard class="w-full overflow-hidden">
       <template #header>
         <div class="flex items-center justify-between">
@@ -85,6 +85,16 @@
         </div>
       </div>
     </UCard>
+
+    <p
+      v-if="isModelLocked"
+      data-testid="enforced-model-notice"
+      class="text-center text-sm text-warning"
+    >
+      This demo uses a basic LLM model and may show degraded results.
+      <br/>
+      Run it locally with your own API key for the best experience.
+    </p>
   </div>
 </template>
 
