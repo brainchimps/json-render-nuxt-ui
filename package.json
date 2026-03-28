@@ -1,0 +1,11 @@
+{
+  "name": "json-render-nuxt-ui-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "demo": "pnpm --filter demo dev"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter json-render-nuxt-ui build && tsx run.ts"
+  },
+  "dependencies": {
+    "json-render-nuxt-ui": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "4.20.5",
+    "typescript": "5.8.2"
+  }
+}
