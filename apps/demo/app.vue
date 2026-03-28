@@ -5,12 +5,49 @@
         <div :class="layoutClasses">
           <UCard :class="chatCardClasses" :ui="chatCardUi">
           <template #header>
-            <div class="flex items-center justify-between">
-              <h1 data-testid="chat-title" class="text-lg font-semibold">
-                <code>json-render-nuxt-ui</code>
-              </h1>
+            <!-- Mobile drawer handle (split view only) -->
+            <div v-if="showSplitView" class="flex items-center justify-between lg:hidden">
+              <button
+                type="button"
+                class="flex items-center gap-1.5 text-muted hover:text-default transition-colors"
+                @click="toggleChatDrawer"
+              >
+                <UIcon
+                  :name="chatExpanded ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
+                  class="size-4"
+                />
+                <span class="text-sm font-medium">Chat</span>
+              </button>
+              <div class="flex items-center gap-2">
+                <UBadge
+                  v-if="chatMessages.length"
+                  :label="`${chatMessages.length}`"
+                  size="xs"
+                  variant="subtle"
+                />
+                <UButton
+                  class="-my-1"
+                  :icon="showOpsPanel ? 'i-lucide-code-xml' : 'i-lucide-code-xml'"
+                  :color="showOpsPanel ? 'primary' : 'neutral'"
+                  :variant="showOpsPanel ? 'soft' : 'ghost'"
+                  size="xs"
+                  aria-label="Toggle JSONL debug"
+                  @click="toggleOpsPanel"
+                />
+              </div>
+            </div>
+            <!-- Desktop / initial state header -->
+            <div
+              class="items-center justify-between"
+              :class="showSplitView ? 'hidden lg:flex' : 'flex'"
+            >
+              <span
+                data-testid="chat-title"
+                :class="showSplitView ? 'text-sm! font-medium!' : 'text-lg font-semibold'"
+              >json-render-nuxt-ui</span>
               <UButton
                 v-if="showSplitView"
+                class="-my-1"
                 :icon="showOpsPanel ? 'i-lucide-code-xml' : 'i-lucide-code-xml'"
                 :color="showOpsPanel ? 'primary' : 'neutral'"
                 :variant="showOpsPanel ? 'soft' : 'ghost'"
@@ -85,8 +122,11 @@
           <div :class="chatBodyClasses">
             <div
               data-testid="chat-messages"
-              v-show="hasMessages"
               class="min-h-0 overflow-y-auto -mr-4 sm:-mr-6"
+              :class="{
+                'hidden': !hasMessages || (showSplitView && !chatExpanded),
+                'lg:block!': showSplitView && !chatExpanded && hasMessages
+              }"
             >
               <UChatMessages
                 class="pr-4 sm:pr-6"
@@ -176,22 +216,25 @@
             :class="showOpsPanel ? 'lg:order-3' : 'lg:order-2'"
             :ui="{ body: 'flex-1 flex flex-col min-h-0 overflow-hidden' }"
           >
-            <template v-if="showOpsPanel" #header>
-              <div class="flex items-center gap-1 lg:hidden">
-                <UButton
-                  size="xs"
-                  :variant="activeRenderTab === 'ui' ? 'soft' : 'ghost'"
-                  :color="activeRenderTab === 'ui' ? 'primary' : 'neutral'"
-                  label="UI"
-                  @click="activeRenderTab = 'ui'"
-                />
-                <UButton
-                  size="xs"
-                  :variant="activeRenderTab === 'jsonl' ? 'soft' : 'ghost'"
-                  :color="activeRenderTab === 'jsonl' ? 'primary' : 'neutral'"
-                  label="JSONL"
-                  @click="activeRenderTab = 'jsonl'"
-                />
+            <template #header>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Rendered UI</span>
+                <div v-if="showOpsPanel" class="flex items-center gap-1 lg:hidden">
+                  <UButton
+                    size="xs"
+                    :variant="activeRenderTab === 'ui' ? 'soft' : 'ghost'"
+                    :color="activeRenderTab === 'ui' ? 'primary' : 'neutral'"
+                    label="UI"
+                    @click="activeRenderTab = 'ui'"
+                  />
+                  <UButton
+                    size="xs"
+                    :variant="activeRenderTab === 'jsonl' ? 'soft' : 'ghost'"
+                    :color="activeRenderTab === 'jsonl' ? 'primary' : 'neutral'"
+                    label="JSONL"
+                    @click="activeRenderTab = 'jsonl'"
+                  />
+                </div>
               </div>
             </template>
 
@@ -230,7 +273,9 @@
           </UCard>
         </div>
       </div>
-      <footer v-if="imprintUrl || privacyPolicyUrl" class="shrink-0 flex justify-center gap-2 pt-4 text-xs text-muted">
+      <footer class="shrink-0 flex justify-center gap-2 pt-4 text-xs text-muted">
+        <span>from <a href="https://brainchimps.com" target="_blank" rel="noopener" class="hover:text-default transition-colors underline decoration-dotted underline-offset-2 decoration-muted/50">Brainchimps</a> with 🥨</span>
+        <span v-if="imprintUrl || privacyPolicyUrl" class="select-none">&middot;</span>
         <a v-if="imprintUrl" :href="imprintUrl" target="_blank" rel="noopener" class="hover:text-default transition-colors">Imprint</a>
         <span v-if="imprintUrl && privacyPolicyUrl" class="select-none">&middot;</span>
         <a v-if="privacyPolicyUrl" :href="privacyPolicyUrl" target="_blank" rel="noopener" class="hover:text-default transition-colors">Privacy Policy</a>
@@ -258,6 +303,12 @@ const activeRenderTab = ref<RenderTab>("ui");
 function toggleOpsPanel() {
   showOpsPanel.value = !showOpsPanel.value;
   activeRenderTab.value = showOpsPanel.value ? "jsonl" : "ui";
+}
+
+const chatExpanded = ref(false);
+
+function toggleChatDrawer() {
+  chatExpanded.value = !chatExpanded.value;
 }
 
 const greeting = "What can I build for you today?";
@@ -326,15 +377,18 @@ const containerClasses = computed(() =>
 const layoutClasses = computed(() => {
   if (!showSplitView.value) return "w-full";
   const base = "grid h-full min-h-0 gap-4 lg:gap-6 lg:grid-rows-1";
-  const mobileRows = "grid-rows-[minmax(0,2fr)_minmax(0,1fr)]";
+  const mobileRows = "grid-rows-1";
   const lgCols = showOpsPanel.value ? "lg:grid-cols-3" : "lg:grid-cols-2";
   return `${base} ${mobileRows} ${lgCols}`;
 });
-const chatCardClasses = computed(() =>
-  showSplitView.value
-    ? "order-2 flex h-full min-h-0 flex-col overflow-hidden lg:order-1"
-    : "overflow-hidden"
-);
+const chatCardClasses = computed(() => {
+  if (!showSplitView.value) return "overflow-hidden";
+  const base = "flex flex-col overflow-hidden transition-[max-height] duration-300 ease-in-out";
+  const mobile = "fixed bottom-0 inset-x-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]";
+  const desktop = "lg:static lg:inset-auto lg:z-auto lg:shadow-none lg:h-full lg:min-h-0 lg:order-1";
+  const height = chatExpanded.value ? "max-h-[70dvh] lg:max-h-none" : "lg:max-h-none";
+  return `${base} ${mobile} ${desktop} ${height}`;
+});
 const chatContentClasses = computed(() =>
   showSplitView.value
     ? "flex flex-1 min-h-0 flex-col"
@@ -384,6 +438,7 @@ async function onSubmit() {
   const text = input.value.trim();
   if (!text || isGenerating.value) return;
 
+  chatExpanded.value = false;
   await submitPrompt(text);
   input.value = "";
 }
