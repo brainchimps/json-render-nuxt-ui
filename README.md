@@ -30,3 +30,7 @@ From `apps/demo`, `pnpm dev`, `pnpm build`, and `pnpm test` each run `pnpm --fil
 The package currently exports:
 
 - `helloWord(): string` -> returns `"Hello json-render!"`
+
+## License
+
+MIT © [Brainchimps GmbH](https://brainchimps.com)

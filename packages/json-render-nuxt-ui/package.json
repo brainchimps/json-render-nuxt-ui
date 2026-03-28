@@ -1,6 +1,7 @@
 {
   "name": "json-render-nuxt-ui",
   "version": "0.0.2",
+  "license": "MIT",
   "description": "Nuxt UI adapter package for Vercel json-render",
   "repository": {
     "type": "git",
