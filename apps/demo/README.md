@@ -11,11 +11,9 @@ cp apps/demo/.env.example apps/demo/.env
 ```
 
 - `AI_GATEWAY_API_KEY` is required for the server chat endpoint.
-- `ENFORCE_AI_MODEL` is optional:
-  - Use fully-qualified Gateway model IDs (for example `openai/gpt-5.4-nano`).
-  - If set, it overrides the available model list: the UI only offers that single model and the server enforces it.
-  - It must match one of the allowlisted models in [`apps/demo/shared/models.ts`](./shared/models.ts).
-  - This is useful for public deployments where you want to lock users to one approved model.
+- `ENFORCE_AI_MODEL` (optional) — lock the UI and server to a single model (must be a Gateway ID listed in [`shared/models.ts`](./shared/models.ts)).
+- `IMPRINT_URL` (optional) — if set, renders an "Imprint" link in the footer.
+- `PRIVACY_POLICY_URL` (optional) — if set, renders a "Privacy Policy" link in the footer.
 
 ## Development
 

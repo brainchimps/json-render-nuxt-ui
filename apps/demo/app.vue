@@ -1,7 +1,7 @@
 <template>
   <UApp>
-    <div class="h-dvh overflow-hidden px-4 py-6 lg:px-6">
-      <div :class="containerClasses">
+    <div class="h-dvh overflow-hidden px-4 py-4 lg:px-6 flex flex-col">
+      <div :class="containerClasses" class="min-h-0 flex-1">
         <div :class="layoutClasses">
           <UCard :class="chatCardClasses" :ui="chatCardUi">
           <template #header>
@@ -147,6 +147,7 @@
             class="order-1 flex min-h-0 flex-col overflow-auto lg:order-2"
             :ui="{ body: 'flex-1 flex flex-col' }"
           >
+            <pre v-if="showSplitView" data-testid="debug-spec" class="text-xs max-h-40 overflow-auto bg-gray-100 p-2 rounded mb-2">hasRenderedSpec={{ hasRenderedSpec }}, root={{ renderedSpec?.root }}, elements={{ Object.keys(renderedSpec?.elements || {}).join(', ') }}, registryKeys={{ Object.keys(registry).join(', ') }}</pre>
             <JSONUIProvider :registry="registry" :initial-state="{}" class="flex flex-1 flex-col">
               <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
                 <Renderer :spec="renderedSpec" :registry="registry" />
@@ -165,6 +166,11 @@
           </UCard>
         </div>
       </div>
+      <footer v-if="imprintUrl || privacyPolicyUrl" class="shrink-0 flex justify-center gap-2 pt-4 text-xs text-muted">
+        <a v-if="imprintUrl" :href="imprintUrl" target="_blank" rel="noopener" class="hover:text-default transition-colors">Imprint</a>
+        <span v-if="imprintUrl && privacyPolicyUrl" class="select-none">&middot;</span>
+        <a v-if="privacyPolicyUrl" :href="privacyPolicyUrl" target="_blank" rel="noopener" class="hover:text-default transition-colors">Privacy Policy</a>
+      </footer>
     </div>
   </UApp>
 </template>
@@ -205,6 +211,8 @@ const starterPrompts = [
 const input = ref("");
 const runtimeConfig = useRuntimeConfig();
 const lockedModel = runtimeConfig.public.enforcedAiModel?.trim();
+const imprintUrl = runtimeConfig.public.imprintUrl as string;
+const privacyPolicyUrl = runtimeConfig.public.privacyPolicyUrl as string;
 const isModelLocked = computed(() => Boolean(lockedModel));
 
 const availableModels = computed<ChatModelOption[]>(() => {

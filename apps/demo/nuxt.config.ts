@@ -19,6 +19,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       enforcedAiModel: process.env.ENFORCE_AI_MODEL?.trim() || "",
+      imprintUrl: process.env.IMPRINT_URL?.trim() || "",
+      privacyPolicyUrl: process.env.PRIVACY_POLICY_URL?.trim() || "",
     },
   },
   experimental: {
