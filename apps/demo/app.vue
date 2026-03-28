@@ -3,7 +3,7 @@
     <div class="h-dvh overflow-hidden px-4 py-6 lg:px-6">
       <div :class="containerClasses">
         <div :class="layoutClasses">
-          <UCard :class="chatCardClasses">
+          <UCard :class="chatCardClasses" :ui="chatCardUi">
           <template #header>
             <h1 data-testid="chat-title" class="text-lg font-semibold">
               <code>json-render-nuxt-ui</code>
@@ -11,6 +11,7 @@
           </template>
           <div :class="chatContentClasses">
           <UChatMessages
+            v-if="!hasMessages"
             class="mb-4"
             :messages="greetingMessages"
             status="ready"
@@ -35,7 +36,7 @@
           <div
             v-if="!hasMessages"
             data-testid="starter-chips"
-            class="-mt-8 mb-4 ml-2 flex flex-wrap items-center gap-2"
+            class="-mt-8 mb-8 ml-2 flex flex-wrap items-center gap-2"
           >
             <button
               v-for="(starter, index) in starterPrompts"
@@ -74,13 +75,17 @@
             <div
               data-testid="chat-messages"
               v-show="hasMessages"
-              class="flex-1 min-h-0 overflow-auto pr-1"
+              class="min-h-0 overflow-y-auto -mr-4 sm:-mr-6"
             >
               <UChatMessages
-                class="h-full overflow-y-auto pr-1"
+                class="pr-4 sm:pr-6"
                 :messages="chatMessages"
                 :status="chatStatus"
                 should-auto-scroll
+                :ui="{
+                  viewport: 'sticky top-auto bottom-2 z-10 flex justify-center pointer-events-none',
+                  autoScroll: 'static right-auto translate-x-0 rounded-full pointer-events-auto',
+                }"
               >
                 <template #content="{ message }">
                   <template
@@ -107,7 +112,7 @@
               </UChatMessages>
             </div>
 
-            <div data-testid="chat-prompt" class="mt-auto shrink-0 pt-4">
+            <div data-testid="chat-prompt" class="shrink-0">
               <UChatPrompt
                 variant="subtle"
                 v-model="input"
@@ -137,13 +142,24 @@
           </UCard>
 
           <UCard
-            v-if="hasRenderedSpec"
+            v-if="showSplitView"
             data-testid="render-panel"
-            class="order-1 min-h-0 overflow-auto lg:order-2"
+            class="order-1 flex min-h-0 flex-col overflow-auto lg:order-2"
+            :ui="{ body: 'flex-1 flex flex-col' }"
           >
-            <JSONUIProvider :registry="jsonRenderRegistry" :initial-state="{}">
-              <div class="flex min-h-full items-center justify-center p-4">
+            <JSONUIProvider :registry="jsonRenderRegistry" :initial-state="{}" class="flex flex-1 flex-col">
+              <div v-if="hasRenderedSpec" class="flex min-h-full items-center justify-center p-4">
                 <Renderer :spec="renderedSpec" :registry="jsonRenderRegistry" />
+              </div>
+              <div v-else class="flex flex-1 flex-col items-center justify-center gap-3 text-muted">
+                <template v-if="isGenerating">
+                  <UIcon name="i-lucide-loader" class="size-6 animate-spin" />
+                  <p class="text-sm">Generating UI&hellip;</p>
+                </template>
+                <template v-else>
+                  <UIcon name="i-lucide-sparkles" class="size-6" />
+                  <p class="text-sm text-center">Ask the AI to generate something<br>and it will appear here.</p>
+                </template>
               </div>
             </JSONUIProvider>
           </UCard>
@@ -243,37 +259,40 @@ const chatMessages = ref<DemoChatMessage[]>([]);
 const hasMessages = computed(() => chatMessages.value.length > 0);
 const renderedSpec = computed(() => ui.spec.value);
 const hasRenderedSpec = computed(() => isNonEmptySpec(renderedSpec.value));
+const showSplitView = computed(() => hasMessages.value);
 const lastSubmittedPrompt = ref<string | null>(null);
 const containerClasses = computed(() =>
-  hasRenderedSpec.value
+  showSplitView.value
     ? "mx-auto h-full w-full"
     : "mx-auto h-full w-full max-w-3xl flex items-center"
 );
 const layoutClasses = computed(() =>
-  hasRenderedSpec.value
-    ? "grid h-full min-h-0 grid-rows-[minmax(0,1fr)_minmax(320px,1fr)] gap-4 lg:grid-cols-2 lg:gap-6 lg:grid-rows-1"
+  showSplitView.value
+    ? "grid h-full min-h-0 grid-rows-[minmax(0,2fr)_minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:gap-6 lg:grid-rows-1"
     : "w-full"
 );
 const chatCardClasses = computed(() =>
-  hasRenderedSpec.value
+  showSplitView.value
     ? "order-2 flex h-full min-h-0 flex-col overflow-hidden lg:order-1"
     : "overflow-hidden"
 );
 const chatContentClasses = computed(() =>
-  hasRenderedSpec.value
+  showSplitView.value
     ? "flex flex-1 min-h-0 flex-col"
-    : hasMessages.value
-      ? "flex h-[60vh] min-h-96 max-h-[70vh] flex-col"
-      : ""
+    : ""
 );
 const chatBodyClasses = computed(() => {
-  if (hasRenderedSpec.value) {
-    return hasMessages.value
-      ? "flex flex-1 min-h-0 flex-col"
-      : "flex flex-1 min-h-0 flex-col justify-end";
+  if (showSplitView.value) {
+    return "grid flex-1 min-h-0 grid-rows-[minmax(0,1fr)_auto] gap-4";
   }
 
-  return hasMessages.value ? "flex flex-1 min-h-0 flex-col" : "flex flex-col";
+  return "flex flex-col";
+});
+const chatCardUi = computed(() => {
+  if (showSplitView.value) {
+    return { body: "flex-1 min-h-0 flex flex-col overflow-hidden" };
+  }
+  return {};
 });
 
 async function useStarterPrompt(prompt: string) {
