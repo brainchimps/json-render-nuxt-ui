@@ -1,6 +1,6 @@
 {
   "name": "json-render-nuxt-ui",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "Apache-2.0",
   "description": "Nuxt UI component library for json-render. JSON becomes beautiful Tailwind-styled Vue components.",
   "keywords": [
